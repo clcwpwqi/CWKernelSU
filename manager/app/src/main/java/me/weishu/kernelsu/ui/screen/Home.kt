@@ -22,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -414,7 +415,11 @@ private fun InfoCard() {
             val uname = Os.uname()
 
             @Composable
-            fun InfoCardItem(label: String, content: String) {
+            fun InfoCardItem(
+                label: String,
+                content: String,
+                icon: Painter = painterResource(R.drawable.ic_sus)
+            ) {
                 contents.appendLine(label).appendLine(content).appendLine()
                 Text(text = label, style = MaterialTheme.typography.bodyLarge)
                 Text(text = content, style = MaterialTheme.typography.bodyMedium)
