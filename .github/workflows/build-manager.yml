@@ -6,10 +6,11 @@ on:
     paths:
       - '.github/workflows/build-manager.yml'
       - 'manager/**'
+      - 'kernel/**'
       - 'userspace/ksud/**'
       - 'userspace/susfsd/**'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "susfs" ]
     paths:
       - 'manager/**'
   workflow_call:
