@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import android.content.Context
 import android.content.Intent
@@ -78,23 +78,23 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.weishu.kernelsu.BuildConfig
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.AboutDialog
-import me.weishu.kernelsu.ui.component.ConfirmResult
-import me.weishu.kernelsu.ui.component.DialogHandle
-import me.weishu.kernelsu.ui.component.SwitchItem
-import me.weishu.kernelsu.ui.component.rememberConfirmDialog
-import me.weishu.kernelsu.ui.component.rememberCustomDialog
-import me.weishu.kernelsu.ui.component.rememberLoadingDialog
-import me.weishu.kernelsu.ui.util.LocalSnackbarHost
-import me.weishu.kernelsu.ui.util.getBugreportFile
-import me.weishu.kernelsu.ui.util.getSuSFS
-import me.weishu.kernelsu.ui.util.getSuSFSFeatures
-import me.weishu.kernelsu.ui.util.susfsSUS_SU_0
-import me.weishu.kernelsu.ui.util.susfsSUS_SU_2
-import me.weishu.kernelsu.ui.util.susfsSUS_SU_Mode
+import shirkneko.zako.mksu.BuildConfig
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.AboutDialog
+import shirkneko.zako.mksu.ui.component.ConfirmResult
+import shirkneko.zako.mksu.ui.component.DialogHandle
+import shirkneko.zako.mksu.ui.component.SwitchItem
+import shirkneko.zako.mksu.ui.component.rememberConfirmDialog
+import shirkneko.zako.mksu.ui.component.rememberCustomDialog
+import shirkneko.zako.mksu.ui.component.rememberLoadingDialog
+import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
+import shirkneko.zako.mksu.ui.util.getBugreportFile
+import shirkneko.zako.mksu.ui.util.getSuSFS
+import shirkneko.zako.mksu.ui.util.getSuSFSFeatures
+import shirkneko.zako.mksu.ui.util.susfsSUS_SU_0
+import shirkneko.zako.mksu.ui.util.susfsSUS_SU_2
+import shirkneko.zako.mksu.ui.util.susfsSUS_SU_Mode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

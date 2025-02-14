@@ -25,7 +25,7 @@ apksign {
 }
 
 android {
-    namespace = "me.weishu.kernelsu"
+    namespace = "shirkneko.zako.mksu"
 
     buildTypes {
         release {

@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.util
+package shirkneko.zako.mksu.ui.util
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.compositionLocalOf

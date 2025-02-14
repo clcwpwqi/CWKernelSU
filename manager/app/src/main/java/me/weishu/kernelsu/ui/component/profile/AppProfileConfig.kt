@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.component.profile
+package shirkneko.zako.mksu.ui.component.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.OutlinedTextField
@@ -11,9 +11,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.SwitchItem
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.SwitchItem
 
 @Composable
 fun AppProfileConfig(

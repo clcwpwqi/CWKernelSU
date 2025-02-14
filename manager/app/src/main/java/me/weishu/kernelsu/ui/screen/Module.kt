@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -92,22 +92,22 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.ConfirmResult
-import me.weishu.kernelsu.ui.component.SearchAppBar
-import me.weishu.kernelsu.ui.component.rememberConfirmDialog
-import me.weishu.kernelsu.ui.component.rememberLoadingDialog
-import me.weishu.kernelsu.ui.util.DownloadListener
-import me.weishu.kernelsu.ui.util.LocalSnackbarHost
-import me.weishu.kernelsu.ui.util.download
-import me.weishu.kernelsu.ui.util.hasMagisk
-import me.weishu.kernelsu.ui.util.reboot
-import me.weishu.kernelsu.ui.util.restoreModule
-import me.weishu.kernelsu.ui.util.toggleModule
-import me.weishu.kernelsu.ui.util.uninstallModule
-import me.weishu.kernelsu.ui.viewmodel.ModuleViewModel
-import me.weishu.kernelsu.ui.webui.WebUIActivity
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.ConfirmResult
+import shirkneko.zako.mksu.ui.component.SearchAppBar
+import shirkneko.zako.mksu.ui.component.rememberConfirmDialog
+import shirkneko.zako.mksu.ui.component.rememberLoadingDialog
+import shirkneko.zako.mksu.ui.util.DownloadListener
+import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
+import shirkneko.zako.mksu.ui.util.download
+import shirkneko.zako.mksu.ui.util.hasMagisk
+import shirkneko.zako.mksu.ui.util.reboot
+import shirkneko.zako.mksu.ui.util.restoreModule
+import shirkneko.zako.mksu.ui.util.toggleModule
+import shirkneko.zako.mksu.ui.util.uninstallModule
+import shirkneko.zako.mksu.ui.viewmodel.ModuleViewModel
+import shirkneko.zako.mksu.ui.webui.WebUIActivity
 import okhttp3.OkHttpClient
 
 @OptIn(ExperimentalMaterial3Api::class)

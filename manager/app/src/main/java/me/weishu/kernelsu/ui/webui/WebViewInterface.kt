@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.webui
+package shirkneko.zako.mksu.ui.webui
 
 import android.app.Activity
 import android.content.Context
@@ -14,9 +14,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.internal.UiThreadHandler
-import me.weishu.kernelsu.ui.util.createRootShell
-import me.weishu.kernelsu.ui.util.listModules
-import me.weishu.kernelsu.ui.util.withNewRootShell
+import shirkneko.zako.mksu.ui.util.createRootShell
+import shirkneko.zako.mksu.ui.util.listModules
+import shirkneko.zako.mksu.ui.util.withNewRootShell
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File

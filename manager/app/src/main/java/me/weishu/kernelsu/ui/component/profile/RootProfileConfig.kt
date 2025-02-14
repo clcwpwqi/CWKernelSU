@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.component.profile
+package shirkneko.zako.mksu.ui.component.profile
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -49,12 +49,12 @@ import com.maxkeppeler.sheets.input.models.ValidationResult
 import com.maxkeppeler.sheets.list.ListDialog
 import com.maxkeppeler.sheets.list.models.ListOption
 import com.maxkeppeler.sheets.list.models.ListSelection
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.profile.Capabilities
-import me.weishu.kernelsu.profile.Groups
-import me.weishu.kernelsu.ui.component.rememberCustomDialog
-import me.weishu.kernelsu.ui.util.isSepolicyValid
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.profile.Capabilities
+import shirkneko.zako.mksu.profile.Groups
+import shirkneko.zako.mksu.ui.component.rememberCustomDialog
+import shirkneko.zako.mksu.ui.util.isSepolicyValid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

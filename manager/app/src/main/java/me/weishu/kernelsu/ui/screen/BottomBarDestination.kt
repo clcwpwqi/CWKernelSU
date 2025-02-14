@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -9,7 +9,7 @@ import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestina
 import com.ramcosta.composedestinations.generated.destinations.ModuleScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SuperUserScreenDestination
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
-import me.weishu.kernelsu.R
+import shirkneko.zako.mksu.R
 
 enum class BottomBarDestination(
     val direction: DirectionDestinationSpec,

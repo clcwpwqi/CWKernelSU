@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.util
+package shirkneko.zako.mksu.ui.util
 
 import android.content.ContentResolver
 import android.content.Context
@@ -16,9 +16,9 @@ import com.topjohnwu.superuser.ShellUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import me.weishu.kernelsu.BuildConfig
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.ksuApp
+import shirkneko.zako.mksu.BuildConfig
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.ksuApp
 import org.json.JSONArray
 import java.io.File
 

@@ -1,4 +1,4 @@
-package me.weishu.kernelsu
+package shirkneko.zako.mksu
 
 import android.system.Os
 

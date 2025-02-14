@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.profile
+package shirkneko.zako.mksu.profile
 
 /**
  * @author weishu

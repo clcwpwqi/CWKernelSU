@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -47,14 +47,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.result.ResultBackNavigator
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.profile.RootProfileConfig
-import me.weishu.kernelsu.ui.util.deleteAppProfileTemplate
-import me.weishu.kernelsu.ui.util.getAppProfileTemplate
-import me.weishu.kernelsu.ui.util.setAppProfileTemplate
-import me.weishu.kernelsu.ui.viewmodel.TemplateViewModel
-import me.weishu.kernelsu.ui.viewmodel.toJSON
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.profile.RootProfileConfig
+import shirkneko.zako.mksu.ui.util.deleteAppProfileTemplate
+import shirkneko.zako.mksu.ui.util.getAppProfileTemplate
+import shirkneko.zako.mksu.ui.util.setAppProfileTemplate
+import shirkneko.zako.mksu.ui.viewmodel.TemplateViewModel
+import shirkneko.zako.mksu.ui.viewmodel.toJSON
 
 /**
  * @author weishu

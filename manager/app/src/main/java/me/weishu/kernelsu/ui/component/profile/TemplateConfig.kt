@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.component.profile
+package shirkneko.zako.mksu.ui.component.profile
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -23,11 +23,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.util.listAppProfileTemplates
-import me.weishu.kernelsu.ui.util.setSepolicy
-import me.weishu.kernelsu.ui.viewmodel.getTemplateInfoById
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.util.listAppProfileTemplates
+import shirkneko.zako.mksu.ui.util.setSepolicy
+import shirkneko.zako.mksu.ui.viewmodel.getTemplateInfoById
 
 /**
  * @author weishu

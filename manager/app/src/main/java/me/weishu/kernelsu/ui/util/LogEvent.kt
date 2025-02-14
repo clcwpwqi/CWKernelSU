@@ -1,11 +1,11 @@
-package me.weishu.kernelsu.ui.util
+package shirkneko.zako.mksu.ui.util
 
 import android.content.Context
 import android.os.Build
 import android.system.Os
 import com.topjohnwu.superuser.ShellUtils
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.ui.screen.getManagerVersion
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.ui.screen.getManagerVersion
 import java.io.File
 import java.io.FileWriter
 import java.io.PrintWriter

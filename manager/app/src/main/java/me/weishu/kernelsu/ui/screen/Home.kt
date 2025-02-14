@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import android.content.Context
 import android.os.Build
@@ -38,11 +38,11 @@ import com.ramcosta.composedestinations.generated.destinations.SettingScreenDest
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.weishu.kernelsu.*
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.rememberConfirmDialog
-import me.weishu.kernelsu.ui.util.*
-import me.weishu.kernelsu.ui.util.module.LatestVersionInfo
+import shirkneko.zako.mksu.*
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.rememberConfirmDialog
+import shirkneko.zako.mksu.ui.util.*
+import shirkneko.zako.mksu.ui.util.module.LatestVersionInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(start = true)

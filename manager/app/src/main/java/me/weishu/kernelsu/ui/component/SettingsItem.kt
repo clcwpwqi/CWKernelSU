@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.component
+package shirkneko.zako.mksu.ui.component
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.interaction.MutableInteractionSource

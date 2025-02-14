@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.component
+package shirkneko.zako.mksu.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -31,8 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import me.weishu.kernelsu.BuildConfig
-import me.weishu.kernelsu.R
+import shirkneko.zako.mksu.BuildConfig
+import shirkneko.zako.mksu.R
 
 @Preview
 @Composable

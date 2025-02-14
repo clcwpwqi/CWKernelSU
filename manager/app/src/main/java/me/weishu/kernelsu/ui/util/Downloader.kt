@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.util
+package shirkneko.zako.mksu.ui.util
 
 import android.annotation.SuppressLint
 import android.app.DownloadManager
@@ -11,7 +11,7 @@ import android.os.Environment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.core.content.ContextCompat
-import me.weishu.kernelsu.ui.util.module.LatestVersionInfo
+import shirkneko.zako.mksu.ui.util.module.LatestVersionInfo
 
 /**
  * @author weishu

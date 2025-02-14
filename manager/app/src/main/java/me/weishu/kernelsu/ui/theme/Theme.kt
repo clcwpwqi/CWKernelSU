@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.theme
+package shirkneko.zako.mksu.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

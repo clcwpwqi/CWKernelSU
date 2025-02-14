@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
@@ -63,20 +63,20 @@ import com.ramcosta.composedestinations.generated.destinations.AppProfileTemplat
 import com.ramcosta.composedestinations.generated.destinations.TemplateEditorScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.SwitchItem
-import me.weishu.kernelsu.ui.component.profile.AppProfileConfig
-import me.weishu.kernelsu.ui.component.profile.RootProfileConfig
-import me.weishu.kernelsu.ui.component.profile.TemplateConfig
-import me.weishu.kernelsu.ui.util.LocalSnackbarHost
-import me.weishu.kernelsu.ui.util.forceStopApp
-import me.weishu.kernelsu.ui.util.getSepolicy
-import me.weishu.kernelsu.ui.util.launchApp
-import me.weishu.kernelsu.ui.util.restartApp
-import me.weishu.kernelsu.ui.util.setSepolicy
-import me.weishu.kernelsu.ui.viewmodel.SuperUserViewModel
-import me.weishu.kernelsu.ui.viewmodel.getTemplateInfoById
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.SwitchItem
+import shirkneko.zako.mksu.ui.component.profile.AppProfileConfig
+import shirkneko.zako.mksu.ui.component.profile.RootProfileConfig
+import shirkneko.zako.mksu.ui.component.profile.TemplateConfig
+import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
+import shirkneko.zako.mksu.ui.util.forceStopApp
+import shirkneko.zako.mksu.ui.util.getSepolicy
+import shirkneko.zako.mksu.ui.util.launchApp
+import shirkneko.zako.mksu.ui.util.restartApp
+import shirkneko.zako.mksu.ui.util.setSepolicy
+import shirkneko.zako.mksu.ui.viewmodel.SuperUserViewModel
+import shirkneko.zako.mksu.ui.viewmodel.getTemplateInfoById
 
 /**
  * @author weishu

@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import android.app.Activity
 import android.content.Intent
@@ -57,16 +57,16 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.FlashScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.DialogHandle
-import me.weishu.kernelsu.ui.component.rememberConfirmDialog
-import me.weishu.kernelsu.ui.component.rememberCustomDialog
-import me.weishu.kernelsu.ui.util.LkmSelection
-import me.weishu.kernelsu.ui.util.getCurrentKmi
-import me.weishu.kernelsu.ui.util.getSupportedKmis
-import me.weishu.kernelsu.ui.util.isAbDevice
-import me.weishu.kernelsu.ui.util.isInitBoot
-import me.weishu.kernelsu.ui.util.rootAvailable
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.DialogHandle
+import shirkneko.zako.mksu.ui.component.rememberConfirmDialog
+import shirkneko.zako.mksu.ui.component.rememberCustomDialog
+import shirkneko.zako.mksu.ui.util.LkmSelection
+import shirkneko.zako.mksu.ui.util.getCurrentKmi
+import shirkneko.zako.mksu.ui.util.getSupportedKmis
+import shirkneko.zako.mksu.ui.util.isAbDevice
+import shirkneko.zako.mksu.ui.util.isInitBoot
+import shirkneko.zako.mksu.ui.util.rootAvailable
 
 /**
  * @author weishu

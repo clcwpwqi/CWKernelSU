@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import android.os.Environment
 import androidx.compose.foundation.layout.Column
@@ -36,10 +36,10 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.KeyEventBlocker
-import me.weishu.kernelsu.ui.util.LocalSnackbarHost
-import me.weishu.kernelsu.ui.util.runModuleAction
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.KeyEventBlocker
+import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
+import shirkneko.zako.mksu.ui.util.runModuleAction
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

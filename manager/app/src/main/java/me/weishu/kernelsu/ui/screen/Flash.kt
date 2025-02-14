@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui.screen
+package shirkneko.zako.mksu.ui.screen
 
 import android.net.Uri
 import android.os.Environment
@@ -51,15 +51,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.KeyEventBlocker
-import me.weishu.kernelsu.ui.util.LkmSelection
-import me.weishu.kernelsu.ui.util.LocalSnackbarHost
-import me.weishu.kernelsu.ui.util.flashModule
-import me.weishu.kernelsu.ui.util.installBoot
-import me.weishu.kernelsu.ui.util.reboot
-import me.weishu.kernelsu.ui.util.restoreBoot
-import me.weishu.kernelsu.ui.util.uninstallPermanently
+import shirkneko.zako.mksu.R
+import shirkneko.zako.mksu.ui.component.KeyEventBlocker
+import shirkneko.zako.mksu.ui.util.LkmSelection
+import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
+import shirkneko.zako.mksu.ui.util.flashModule
+import shirkneko.zako.mksu.ui.util.installBoot
+import shirkneko.zako.mksu.ui.util.reboot
+import shirkneko.zako.mksu.ui.util.restoreBoot
+import shirkneko.zako.mksu.ui.util.uninstallPermanently
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

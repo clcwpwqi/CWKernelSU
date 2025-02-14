@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui
+package shirkneko.zako.mksu.ui
 
 import android.os.Build
 import android.os.Bundle
@@ -39,13 +39,13 @@ import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationSty
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.utils.isRouteOnBackStackAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
-import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.ksuApp
-import me.weishu.kernelsu.ui.screen.BottomBarDestination
-import me.weishu.kernelsu.ui.theme.KernelSUTheme
-import me.weishu.kernelsu.ui.util.LocalSnackbarHost
-import me.weishu.kernelsu.ui.util.rootAvailable
-import me.weishu.kernelsu.ui.util.install
+import shirkneko.zako.mksu.Natives
+import shirkneko.zako.mksu.ksuApp
+import shirkneko.zako.mksu.ui.screen.BottomBarDestination
+import shirkneko.zako.mksu.ui.theme.KernelSUTheme
+import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
+import shirkneko.zako.mksu.ui.util.rootAvailable
+import shirkneko.zako.mksu.ui.util.install
 
 class MainActivity : ComponentActivity() {
 

@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.ui;
+package shirkneko.zako.mksu.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.weishu.kernelsu.IKsuInterface;
+import shirkneko.zako.mksu.IKsuInterface;
 import rikka.parcelablelist.ParcelableListSlice;
 
 /**
