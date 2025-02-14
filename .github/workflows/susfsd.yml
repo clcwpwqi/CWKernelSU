@@ -1,7 +1,7 @@
 name: Build susfsd
 on:
   push:
-    branches: [ "next" ]
+    branches: [ "susfs" ]
     paths:
       - '.github/workflows/susfsd.yml'
       - 'userspace/susfsd/**'
