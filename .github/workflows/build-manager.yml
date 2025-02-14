@@ -7,6 +7,7 @@ on:
       - '.github/workflows/build-manager.yml'
       - 'manager/**'
       - 'userspace/ksud/**'
+      - 'userspace/susfsd/**'
   pull_request:
     branches: [ "main" ]
     paths:
@@ -82,6 +83,18 @@ jobs:
       upload: ${{ needs.check-build-lkm.outputs.upload_lkm == 'true' }}
     secrets: inherit
 
+  build-susfsd:
+    needs: build-lkm
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-linux-android
+            os: ubuntu-latest
+    uses: ./.github/workflows/susfsd.yml
+    with:
+      target: ${{ matrix.target }}
+      os: ${{ matrix.os }}
+
   build-ksud:
     if: ${{ always() }}
     needs: [ check-build-lkm, build-lkm ]
@@ -147,6 +160,12 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Download arm64 susfsd
+        uses: actions/download-artifact@v4
+        with:
+          name: susfsd-aarch64-linux-android
+          path: .
+
       - name: Download arm64 ksud
         uses: actions/download-artifact@v4
         with:
@@ -166,6 +185,11 @@ jobs:
           cp -f ../aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud.so
           cp -f ../x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud.so
 
+      - name: Copy susfsd to app jniLibs
+        run: |
+          mkdir -p app/src/main/jniLibs/arm64-v8a
+          cp -f ../arm64-v8a/susfsd ../manager/app/src/main/jniLibs/arm64-v8a/libsusfsd.so
+
       - name: Build with Gradle
         run: |
           {
@@ -179,14 +203,12 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
-        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/susfs') ) || github.ref_type == 'tag' }}
         with:
           name: manager
           path: manager/app/build/outputs/apk/release/*.apk
 
       - name: Upload mappings
         uses: actions/upload-artifact@v4
-        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/main' ) || github.ref_type == 'tag' }}
         with:
           name: "mappings"
           path: "manager/app/build/outputs/mapping/release/"
