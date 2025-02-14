@@ -85,7 +85,8 @@ jobs:
     secrets: inherit
 
   build-susfsd:
-    needs: build-lkm
+    if: ${{ always() }}
+    needs: [ check-build-lkm, build-lkm ]
     strategy:
       matrix:
         include:
@@ -95,6 +96,8 @@ jobs:
     with:
       target: ${{ matrix.target }}
       os: ${{ matrix.os }}
+      pack_lkm: true
+      pull_lkm: ${{ needs.check-build-lkm.outputs.build_lkm != 'true' }}
 
   build-ksud:
     if: ${{ always() }}
