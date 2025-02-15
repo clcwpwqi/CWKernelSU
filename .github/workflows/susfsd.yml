@@ -60,6 +60,9 @@ jobs:
           log-accepted-android-sdk-licenses: true
 
       - name: Download and extract NDK
+        env:
+          HTTP_PROXY: http://192.168.1.2:7897
+          HTTPS_PROXY: http://192.168.1.2:7897
         run: |
           NDK_VERSION="27.0.12077973"  # 替换为需要的 NDK 版本
           NDK_URL="https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
