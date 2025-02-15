@@ -35,7 +35,7 @@ jobs:
       - build-a14-kernel
       - build-wsa-kernel
       - build-arcvm-kernel
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
