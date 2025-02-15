@@ -7,14 +7,6 @@ on:
       - '.github/workflows/susfsd.yml'
       - 'userspace/susdfs/**'
   workflow_dispatch:
-    inputs:
-      target:
-        required: true
-        type: string
-      os:
-        required: false
-        type: string
-        default: ubuntu-latest
   workflow_call:
     inputs:
       target:
@@ -28,7 +20,7 @@ on:
 jobs:
   build-susfs:
     name: Build userspace susfsd
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
