@@ -8,7 +8,7 @@ on:
       os:
         required: false
         type: string
-        default: self-hosted
+        default: ubuntu-latest
       pull_lkm:
         required: false
         type: boolean
