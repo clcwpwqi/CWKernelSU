@@ -102,9 +102,9 @@ jobs:
       matrix:
         include:
           - target: aarch64-linux-android
-            os: ubuntu-latest
+            os: self-hosted
           - target: x86_64-linux-android
-            os: ubuntu-latest
+            os: self-hosted
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
@@ -115,7 +115,7 @@ jobs:
   build-manager:
     if: ${{ always() }}
     needs: build-ksud
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     defaults:
       run:
         working-directory: ./manager
