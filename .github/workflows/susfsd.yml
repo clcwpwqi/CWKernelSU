@@ -5,7 +5,7 @@ on:
     branches: [ "susfs" ]
     paths:
       - '.github/workflows/susfsd.yml'
-      - 'userspace/susfsd/**'
+      - 'userspace/susdfs/**'
   workflow_dispatch:
     inputs:
       target:
@@ -41,6 +41,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+        env:
+          HTTP_PROXY: http://192.168.1.2:7897
+          HTTPS_PROXY: http://192.168.1.2:7897
 
       - name: Set JAVA_HOME
         run: |
@@ -55,7 +58,7 @@ jobs:
 
       - name: Download and extract NDK
         run: |
-          NDK_VERSION="27.0.12077973" 
+          NDK_VERSION="27.0.12077973"  # 替换为需要的 NDK 版本
           NDK_URL="https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
           curl -L -o ndk.zip ${NDK_URL}
           unzip -q ndk.zip -d $HOME/android-ndk
