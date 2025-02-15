@@ -52,7 +52,7 @@ jobs:
 
   push-to-branch:
     needs: [build-lkm]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: ${{ inputs.upload }}
     steps:
       - name: Download all workflow run artifacts
