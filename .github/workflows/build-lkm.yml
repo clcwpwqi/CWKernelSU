@@ -18,10 +18,6 @@ on:
         type: boolean
         default: false
         description: "Whether to upload to branch"
-env:
-    HTTP_PROXY: http://192.168.1.2:7897
-    HTTPS_PROXY: http://192.168.1.2:7897
-    NO_PROXY: localhost
 jobs:
   build-lkm:
     strategy:
