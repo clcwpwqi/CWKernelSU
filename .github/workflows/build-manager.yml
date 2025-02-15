@@ -33,7 +33,7 @@ on:
 
 jobs:
   check-build-lkm:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       build_lkm: ${{ steps.check-build.outputs.build_lkm }}
       upload_lkm: ${{ steps.check-build.outputs.upload_lkm }}
