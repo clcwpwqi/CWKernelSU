@@ -1,4 +1,5 @@
 name: Build susfsd
+
 on:
   push:
     branches: [ "susfs" ]
@@ -6,6 +7,14 @@ on:
       - '.github/workflows/susfsd.yml'
       - 'userspace/susfsd/**'
   workflow_dispatch:
+    inputs:
+      target:
+        required: true
+        type: string
+      os:
+        required: false
+        type: string
+        default: self-hosted
   workflow_call:
     inputs:
       target:
@@ -15,24 +24,51 @@ on:
         required: false
         type: string
         default: self-hosted
+
 jobs:
   build-susfs:
     name: Build userspace susfsd
     runs-on: self-hosted
+
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Setup Android SDK and NDK
-      uses: android-actions/setup-android@v3
-      with:
-        ndk: latest
-    - name: Build susfsd
-      working-directory: ./userspace/susfsd
-      run: $ANDROID_NDK/ndk-build
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: susfsd-aarch64-linux-android
-        path: ./userspace/susfsd/libs
-    
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set JAVA_HOME
+        run: |
+          echo "JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+
+      - name: Setup Android SDK and NDK
+        uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: latest
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: true
+
+      - name: Download and extract NDK
+        run: |
+          NDK_VERSION="27.0.12077973" 
+          NDK_URL="https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
+          curl -L -o ndk.zip ${NDK_URL}
+          unzip -q ndk.zip -d $HOME/android-ndk
+          rm ndk.zip
+          echo "ANDROID_NDK_HOME=$HOME/android-ndk/android-ndk-${NDK_VERSION}" >> $GITHUB_ENV
+
+      - name: Build susfsd
+        working-directory: ./userspace/susfsd
+        run: |
+          $ANDROID_NDK_HOME/ndk-build
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: susfsd-aarch64-linux-android
+          path: ./userspace/susfsd/libs
