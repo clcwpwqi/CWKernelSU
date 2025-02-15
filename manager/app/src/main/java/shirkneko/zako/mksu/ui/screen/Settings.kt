@@ -178,35 +178,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
             }
 
             val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-            var checkUpdate by rememberSaveable {
-                mutableStateOf(
-                    prefs.getBoolean("check_update", true)
-                )
-            }
-            SwitchItem(
-                icon = Icons.Filled.Update,
-                title = stringResource(id = R.string.settings_check_update),
-                summary = stringResource(id = R.string.settings_check_update_summary),
-                checked = checkUpdate
-            ) {
-                prefs.edit().putBoolean("check_update", it).apply()
-                checkUpdate = it
-            }
-
-            var enableWebDebugging by rememberSaveable {
-                mutableStateOf(
-                    prefs.getBoolean("enable_web_debugging", false)
-                )
-            }
-            SwitchItem(
-                icon = Icons.Filled.DeveloperMode,
-                title = stringResource(id = R.string.enable_web_debugging),
-                summary = stringResource(id = R.string.enable_web_debugging_summary),
-                checked = enableWebDebugging
-            ) {
-                prefs.edit().putBoolean("enable_web_debugging", it).apply()
-                enableWebDebugging = it
-            }
 
             val suSFS = getSuSFS()
             val isSUS_SU = getSuSFSFeatures()
@@ -235,6 +206,36 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         isEnabled = it
                     }
                 }
+            }
+
+            var checkUpdate by rememberSaveable {
+                mutableStateOf(
+                    prefs.getBoolean("check_update", true)
+                )
+            }
+            SwitchItem(
+                icon = Icons.Filled.Update,
+                title = stringResource(id = R.string.settings_check_update),
+                summary = stringResource(id = R.string.settings_check_update_summary),
+                checked = checkUpdate
+            ) {
+                prefs.edit().putBoolean("check_update", it).apply()
+                checkUpdate = it
+            }
+
+            var enableWebDebugging by rememberSaveable {
+                mutableStateOf(
+                    prefs.getBoolean("enable_web_debugging", false)
+                )
+            }
+            SwitchItem(
+                icon = Icons.Filled.DeveloperMode,
+                title = stringResource(id = R.string.enable_web_debugging),
+                summary = stringResource(id = R.string.enable_web_debugging_summary),
+                checked = enableWebDebugging
+            ) {
+                prefs.edit().putBoolean("enable_web_debugging", it).apply()
+                enableWebDebugging = it
             }
 
             var showBottomsheet by remember { mutableStateOf(false) }

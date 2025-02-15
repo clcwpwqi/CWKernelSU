@@ -418,7 +418,6 @@ private fun InfoCard() {
             fun InfoCardItem(
                 label: String,
                 content: String,
-                icon: Painter = painterResource(R.drawable.ic_sus)
             ) {
                 contents.appendLine(label).appendLine(content).appendLine()
                 Text(text = label, style = MaterialTheme.typography.bodyLarge)
@@ -435,6 +434,13 @@ private fun InfoCard() {
             )
 
             Spacer(Modifier.height(16.dp))
+            InfoCardItem(stringResource(R.string.home_fingerprint), Build.FINGERPRINT)
+
+            Spacer(Modifier.height(16.dp))
+            InfoCardItem(stringResource(R.string.home_selinux_status), getSELinuxStatus()
+            )
+
+            Spacer(Modifier.height(16.dp))
             val isSUS_SU = getSuSFSFeatures() == "CONFIG_KSU_SUSFS_SUS_SU"
             val suSFS = getSuSFS()
             if (suSFS == "Supported") {
@@ -442,15 +448,8 @@ private fun InfoCard() {
                 InfoCardItem(
                     label = stringResource(R.string.home_susfs_version),
                     content = "${getSuSFSVersion()} (${getSuSFSVariant()}) $susSUMode",
-                    icon = painterResource(R.drawable.ic_sus),
                 )
             }
-
-            Spacer(Modifier.height(16.dp))
-            InfoCardItem(stringResource(R.string.home_fingerprint), Build.FINGERPRINT)
-
-            Spacer(Modifier.height(16.dp))
-            InfoCardItem(stringResource(R.string.home_selinux_status), getSELinuxStatus())
         }
     }
 }
