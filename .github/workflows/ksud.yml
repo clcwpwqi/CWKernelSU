@@ -21,6 +21,10 @@ on:
         required: false
         type: boolean
         default: true
+      env:
+      HTTP_PROXY: http://192.168.1.2:7897
+      HTTPS_PROXY: http://192.168.1.2:7897
+      NO_PROXY: localhost
 jobs:
   build:
     runs-on: ${{ inputs.os }}
