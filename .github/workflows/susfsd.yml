@@ -19,10 +19,6 @@ jobs:
   build-susfs:
     name: Build userspace susfsd
     runs-on: self-hosted
-    env:
-      HTTP_PROXY: http://192.168.1.2:7897
-      HTTPS_PROXY: http://192.168.1.2:7897
-      NO_PROXY: localhost,127.0.0.1,.github.com
     steps:
     - uses: actions/checkout@v4
       with:
@@ -31,9 +27,6 @@ jobs:
       uses: android-actions/setup-android@v3
       with:
         ndk: latest
-    - name: Set ANDROID_NDK environment variable
-      run: |
-        echo "ANDROID_NDK=$HOME/android-ndk" >> $GITHUB_ENV
     - name: Build susfsd
       working-directory: ./userspace/susfsd
       run: $ANDROID_NDK/ndk-build
