@@ -140,4 +140,6 @@
     <string name="status_not_supported">不支持</string>
     <string name="status_unknown">未知</string>
     <string name="sus_su_mode">SuS SU 模式：</string>
+    <string name="module_install_confirm">确认安装</string>
+    <string name="module_install_confirm_message">您确定要安装此模块: %1$s?</string>
 </resources>

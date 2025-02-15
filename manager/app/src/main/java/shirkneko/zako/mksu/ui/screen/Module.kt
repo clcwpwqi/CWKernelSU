@@ -109,6 +109,31 @@ import shirkneko.zako.mksu.ui.util.uninstallModule
 import shirkneko.zako.mksu.ui.viewmodel.ModuleViewModel
 import shirkneko.zako.mksu.ui.webui.WebUIActivity
 import okhttp3.OkHttpClient
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.util.zip.ZipInputStream
+
+fun getModuleNameFromUri(context: Context, uri: Uri): String {
+    val contentResolver = context.contentResolver
+    val inputStream = contentResolver.openInputStream(uri) ?: return "Unknown Module"
+
+    val zipInputStream = ZipInputStream(inputStream)
+    var entry = zipInputStream.nextEntry
+    while (entry != null) {
+        if (entry.name == "module.prop") { // 假设模块名称存储在 module.prop 文件中
+            val reader = BufferedReader(InputStreamReader(zipInputStream))
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                if (line?.startsWith("name=") == true) {
+                    return line?.substringAfter("=") ?: "Unknown Module"
+                }
+            }
+        }
+        entry = zipInputStream.nextEntry
+    }
+    return "Unknown Module"
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -134,6 +159,8 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
     val hideInstallButton = isSafeMode || hasMagisk
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+    val confirmDialog = rememberConfirmDialog()
 
     val webUILauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -205,27 +232,31 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                 val moduleInstall = stringResource(id = R.string.module_install)
                 val selectZipLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartActivityForResult()
-                ) {
-                    if (it.resultCode != RESULT_OK) {
-                        return@rememberLauncherForActivityResult
+                ) { result ->
+                    if (result.resultCode == RESULT_OK) {
+                        val uri = result.data?.data ?: return@rememberLauncherForActivityResult
+                        val moduleName = getModuleNameFromUri(context, uri) // 获取模块名称
+                        // 弹出确认对话框
+                        scope.launch {
+                            val confirmResult = confirmDialog.awaitConfirm(
+                                title = context.getString(R.string.module_install_confirm),
+                                content = context.getString(R.string.module_install_confirm_message, moduleName), // 显示模块名称
+                                confirm = context.getString(R.string.install),
+                                dismiss = context.getString(android.R.string.cancel)
+                            )
+                            if (confirmResult == ConfirmResult.Confirmed) {
+                                navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
+                            }
+                        }
                     }
-                    val data = it.data ?: return@rememberLauncherForActivityResult
-                    val uri = data.data ?: return@rememberLauncherForActivityResult
-
-                    navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
-
-                    viewModel.markNeedRefresh()
-
-                    Log.i("ModuleScreen", "select zip result: ${it.data}")
                 }
 
                 ExtendedFloatingActionButton(
                     onClick = {
-                        // select the zip file to install
-                        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                        // 打开文件选择器
+                        selectZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                             type = "application/zip"
-                        }
-                        selectZipLauncher.launch(intent)
+                        })
                     },
                     icon = { Icon(Icons.Filled.Add, moduleInstall) },
                     text = { Text(text = moduleInstall) },
