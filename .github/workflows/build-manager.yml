@@ -82,7 +82,6 @@ jobs:
     with:
       upload: ${{ needs.check-build-lkm.outputs.upload_lkm == 'true' }}
     secrets: inherit
-
   build-susfsd:
     if: ${{ always() }}
     needs: [ check-build-lkm, build-lkm ]
