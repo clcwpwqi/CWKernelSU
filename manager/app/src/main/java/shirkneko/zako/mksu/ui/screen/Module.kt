@@ -1,6 +1,7 @@
 package shirkneko.zako.mksu.ui.screen
 
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -112,6 +113,12 @@ import okhttp3.OkHttpClient
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.zip.ZipInputStream
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlinx.coroutines.CompletableDeferred
+import java.io.IOException
 
 fun getModuleNameFromUri(context: Context, uri: Uri): String {
     val contentResolver = context.contentResolver
@@ -134,7 +141,6 @@ fun getModuleNameFromUri(context: Context, uri: Uri): String {
     return "Unknown Module"
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
@@ -144,6 +150,31 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
     val snackBarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+    // 添加文件选择器
+    val backupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.data?.let { uri ->
+                scope.launch {
+                    backupModules(context, snackBarHost, uri)
+                }
+            }
+        }
+    }
+
+    val restoreLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.data?.let { uri ->
+                scope.launch {
+                    restoreModules(context, snackBarHost, uri)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         if (viewModel.moduleList.isEmpty() || viewModel.isNeedRefresh) {
@@ -159,8 +190,6 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
     val hideInstallButton = isSafeMode || hasMagisk
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    val confirmDialog = rememberConfirmDialog()
 
     val webUILauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -192,13 +221,9 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                             }, trailingIcon = {
                                 Checkbox(viewModel.sortActionFirst, null)
                             }, onClick = {
-                                viewModel.sortActionFirst =
-                                    !viewModel.sortActionFirst
+                                viewModel.sortActionFirst = !viewModel.sortActionFirst
                                 prefs.edit()
-                                    .putBoolean(
-                                        "module_sort_action_first",
-                                        viewModel.sortActionFirst
-                                    )
+                                    .putBoolean("module_sort_action_first", viewModel.sortActionFirst)
                                     .apply()
                                 scope.launch {
                                     viewModel.fetchModuleList()
@@ -209,18 +234,59 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                             }, trailingIcon = {
                                 Checkbox(viewModel.sortEnabledFirst, null)
                             }, onClick = {
-                                viewModel.sortEnabledFirst =
-                                    !viewModel.sortEnabledFirst
+                                viewModel.sortEnabledFirst = !viewModel.sortEnabledFirst
                                 prefs.edit()
-                                    .putBoolean(
-                                        "module_sort_enabled_first",
-                                        viewModel.sortEnabledFirst
-                                    )
+                                    .putBoolean("module_sort_enabled_first", viewModel.sortEnabledFirst)
                                     .apply()
                                 scope.launch {
                                     viewModel.fetchModuleList()
                                 }
                             })
+
+                            HorizontalDivider()
+
+                            // 修改备份选项
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.backup_modules)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Download,
+                                        contentDescription = "备份"
+                                    )
+                                },
+                                onClick = {
+                                    showDropdown = false
+                                    // 打开目录选择器
+                                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                        type = "application/zip"
+                                        // 设置默认文件名
+                                        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                                        putExtra(Intent.EXTRA_TITLE, "modules_backup_$timestamp.zip")
+                                    }
+                                    backupLauncher.launch(intent)
+                                }
+                            )
+
+                            // 修改还原选项
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.restore_modules)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Refresh,
+                                        contentDescription = "还原"
+                                    )
+                                },
+                                onClick = {
+                                    showDropdown = false
+                                    // 打开文件选择器
+                                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                        type = "application/zip"
+                                    }
+                                    restoreLauncher.launch(intent)
+                                }
+                            )
                         }
                     }
                 },
@@ -238,13 +304,8 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                         val moduleName = getModuleNameFromUri(context, uri) // 获取模块名称
                         // 弹出确认对话框
                         scope.launch {
-                            val confirmResult = confirmDialog.awaitConfirm(
-                                title = context.getString(R.string.module_install_confirm),
-                                content = context.getString(R.string.module_install_confirm_message, moduleName), // 显示模块名称
-                                confirm = context.getString(R.string.install),
-                                dismiss = context.getString(android.R.string.cancel)
-                            )
-                            if (confirmResult == ConfirmResult.Confirmed) {
+                            val userConfirmed = showInstallConfirmation(context, moduleName)
+                            if (userConfirmed) {
                                 navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
                             }
                         }
@@ -770,6 +831,151 @@ fun ModuleItem(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+// 修改备份功能
+private suspend fun backupModules(context: Context, snackBarHost: SnackbarHostState, uri: Uri) {
+    withContext(Dispatchers.IO) {
+        try {
+            // 1. 定义路径
+            val busyboxPath = "/data/adb/ksu/bin/busybox"
+            val moduleDir = "/data/adb/modules"
+            val tempFile = File(context.cacheDir, "backup_${System.currentTimeMillis()}.tar.gz")
+            val tempPath = tempFile.absolutePath
+
+            // 2. 执行 tar 备份命令
+            val command = """
+                cd "$moduleDir" &&
+                $busyboxPath tar -czvf "$tempPath" ./*
+            """.trimIndent()
+
+            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", command))
+            process.waitFor()
+
+            // 3. 检查错误
+            val error = BufferedReader(InputStreamReader(process.errorStream)).readText()
+            if (process.exitValue() != 0) {
+                throw IOException("命令执行失败: $error")
+            }
+
+            // 4. 复制到用户选择的 URI
+            context.contentResolver.openOutputStream(uri)?.use { output ->
+                tempFile.inputStream().use { input ->
+                    input.copyTo(output)
+                }
+            }
+
+            // 5. 清理临时文件
+            tempFile.delete()
+
+            // 6. 提示成功
+            withContext(Dispatchers.Main) {
+                snackBarHost.showSnackbar("备份成功 (tar.gz)", duration = SnackbarDuration.Long)
+            }
+
+        } catch (e: Exception) {
+            Log.e("Backup", "备份失败", e)
+            withContext(Dispatchers.Main) {
+                snackBarHost.showSnackbar("备份失败: ${e.message}", duration = SnackbarDuration.Long)
+            }
+        }
+    }
+}
+
+private suspend fun showInstallConfirmation(context: Context, moduleName: String): Boolean {
+    val result = CompletableDeferred<Boolean>()
+    withContext(Dispatchers.Main) {
+        AlertDialog.Builder(context)
+            .setTitle(context.getString(R.string.module_install_confirm))
+            .setMessage(context.getString(R.string.module_install_confirm_message, moduleName))
+            .setPositiveButton(context.getString(R.string.install)) { _, _ -> result.complete(true) }
+            .setNegativeButton(context.getString(android.R.string.cancel)) { _, _ -> result.complete(false) }
+            .setOnCancelListener { result.complete(false) }
+            .show()
+    }
+    return result.await()
+}
+
+private suspend fun showRestoreConfirmation(context: Context): Boolean {
+    val result = CompletableDeferred<Boolean>()
+    withContext(Dispatchers.Main) {
+        AlertDialog.Builder(context)
+            .setTitle("确认还原模块")
+            .setMessage("此操作将覆盖所有现有模块，是否继续？")
+            .setPositiveButton("确定") { _, _ -> result.complete(true) }
+            .setNegativeButton("取消") { _, _ -> result.complete(false) }
+            .setOnCancelListener { result.complete(false) }
+            .show()
+    }
+    return result.await()
+}
+
+// 修改还原功能
+private suspend fun restoreModules(
+    context: Context,
+    snackBarHost: SnackbarHostState,
+    uri: Uri
+) {
+    val userConfirmed = showRestoreConfirmation(context)
+    if (!userConfirmed) return
+
+    withContext(Dispatchers.IO) {
+        try {
+            // 1. 定义关键路径和命令
+            val busyboxPath = "/data/adb/ksu/bin/busybox"
+            val moduleDir = "/data/adb/modules"
+            val tempFile = File(context.cacheDir, "temp_restore.tar.gz").apply {
+                if (exists()) delete()
+            }
+
+            // 2. 将用户选择的文件复制到临时目录
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            // 3. 执行还原命令（使用 tar 解压）
+            val command = """
+                cd "$moduleDir" &&
+                rm -rf * && 
+                $busyboxPath tar -xzvf "${tempFile.absolutePath}"
+            """.trimIndent()
+
+            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", command))
+            process.waitFor()
+
+            // 4. 检查命令错误
+            val error = BufferedReader(InputStreamReader(process.errorStream)).readText()
+            if (process.exitValue() != 0) {
+                throw IOException("命令执行失败: $error")
+            }
+
+            // 5. 清理临时文件
+            tempFile.delete()
+
+            // 6. 提示成功并要求重启
+            withContext(Dispatchers.Main) {
+                val snackbarResult = snackBarHost.showSnackbar(
+                    message = "模块已成功还原，需重启生效",
+                    actionLabel = "立即重启",
+                    duration = SnackbarDuration.Long
+                )
+                if (snackbarResult == SnackbarResult.ActionPerformed) {
+                    reboot()
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Restore", "还原失败", e)
+            withContext(Dispatchers.Main) {
+                snackBarHost.showSnackbar(
+                    message = "还原失败: ${e.message ?: "未知错误"}",
+                    duration = SnackbarDuration.Long
+                )
             }
         }
     }

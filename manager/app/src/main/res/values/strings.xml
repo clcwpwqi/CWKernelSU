@@ -144,4 +144,6 @@
     <string name="sus_su_mode">SuS SU mode:</string>
     <string name="module_install_confirm">Confirm Installation</string>
     <string name="module_install_confirm_message">Are you sure you want to install the module: %1$s?</string>
+    <string name="backup_modules">backup modules</string>
+    <string name="restore_modules">restore modules</string>
 </resources>
