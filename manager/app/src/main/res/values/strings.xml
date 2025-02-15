@@ -138,4 +138,8 @@
     <string name="selected_lkm">Selected LKM: %s</string>
     <string name="save_log">Save logs</string>
     <string name="log_saved">Logs saved</string>
+    <string name="status_supported">Supported</string>
+    <string name="status_not_supported">Not Supported</string>
+    <string name="status_unknown">Unknown</string>
+    <string name="sus_su_mode">SuS SU mode:</string>
 </resources>

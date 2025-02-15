@@ -22,11 +22,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,6 +41,8 @@ import shirkneko.zako.mksu.R
 import shirkneko.zako.mksu.ui.component.rememberConfirmDialog
 import shirkneko.zako.mksu.ui.util.*
 import shirkneko.zako.mksu.ui.util.module.LatestVersionInfo
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(start = true)
@@ -279,14 +279,19 @@ private fun StatusCard(
                             text = stringResource(R.string.home_module_count, getModuleCount()),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        Spacer(Modifier.height(4.dp))
-                        val suSFS = getSuSFS()
-                        if (suSFS == "Supported") {
-                            Text(
-                                text = stringResource(R.string.home_susfs, getSuSFS()),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        val suSFS = getSuSFS() // 假设返回值是 "Supported"、"Not Supported" 或其他
+                        val translatedStatus = when (suSFS) {
+                            "Supported" -> stringResource(R.string.status_supported)
+                            "Not Supported" -> stringResource(R.string.status_not_supported)
+                            else -> stringResource(R.string.status_unknown) // 默认值
                         }
+
+                        Text(
+                            text = stringResource(R.string.home_susfs, translatedStatus), // 动态插入翻译后的值
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
 
@@ -440,14 +445,28 @@ private fun InfoCard() {
             InfoCardItem(stringResource(R.string.home_selinux_status), getSELinuxStatus()
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
             val isSUS_SU = getSuSFSFeatures() == "CONFIG_KSU_SUSFS_SUS_SU"
             val suSFS = getSuSFS()
+
             if (suSFS == "Supported") {
-                val susSUMode = if (isSUS_SU) "| SuS SU mode: ${susfsSUS_SU_Mode()}" else ""
-                InfoCardItem(
-                    label = stringResource(R.string.home_susfs_version),
-                    content = "${getSuSFSVersion()} (${getSuSFSVariant()}) $susSUMode",
+                val susSUModeLabel = stringResource(R.string.sus_su_mode)
+                val susSUModeValue = susfsSUS_SU_Mode()  // 获取 SuS SU 模式的值
+                val susSUMode = if (isSUS_SU) " $susSUModeLabel $susSUModeValue" else ""
+
+                val label = stringResource(R.string.home_susfs_version)  // 获取 label 的值
+
+                Text(
+                    text = label,  // 显示 label
+                    style = MaterialTheme.typography.titleMedium,  // 使用合适的样式
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = "${getSuSFSVersion()} (${getSuSFSVariant()})$susSUMode",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
