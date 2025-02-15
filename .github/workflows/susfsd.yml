@@ -28,9 +28,12 @@ jobs:
       with:
         fetch-depth: 0
     - name: Setup Android SDK and NDK
-      uses: android-actions/setup-android@v4
+      uses: android-actions/setup-android@v3
       with:
         ndk: latest
+    - name: Set ANDROID_NDK environment variable
+      run: |
+        echo "ANDROID_NDK=$HOME/android-ndk" >> $GITHUB_ENV
     - name: Build susfsd
       working-directory: ./userspace/susfsd
       run: $ANDROID_NDK/ndk-build
