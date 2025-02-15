@@ -32,7 +32,7 @@ on:
         description: "Whether to upload lkm"
 jobs:
   check-build-lkm:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       build_lkm: ${{ steps.check-build.outputs.build_lkm }}
       upload_lkm: ${{ steps.check-build.outputs.upload_lkm }}
@@ -102,9 +102,9 @@ jobs:
       matrix:
         include:
           - target: aarch64-linux-android
-            os: self-hosted
+            os: ubuntu-latest
           - target: x86_64-linux-android
-            os: self-hosted
+            os: ubuntu-latest
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
@@ -115,7 +115,7 @@ jobs:
   build-manager:
     if: ${{ always() }}
     needs: build-ksud
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./manager
