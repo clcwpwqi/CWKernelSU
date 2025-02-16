@@ -119,6 +119,11 @@ import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.CompletableDeferred
 import java.io.IOException
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.window.PopupProperties
+import okhttp3.Request
+
 
 fun getModuleNameFromUri(context: Context, uri: Uri): String {
     val contentResolver = context.contentResolver
@@ -145,6 +150,7 @@ fun getModuleNameFromUri(context: Context, uri: Uri): String {
 @Destination<RootGraph>
 @Composable
 fun ModuleScreen(navigator: DestinationsNavigator) {
+
     val viewModel = viewModel<ModuleViewModel>()
     val context = LocalContext.current
     val snackBarHost = LocalSnackbarHost.current
@@ -212,12 +218,21 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = stringResource(id = R.string.settings)
                         )
-
                         DropdownMenu(expanded = showDropdown, onDismissRequest = {
                             showDropdown = false
-                        }) {
+                        },properties = PopupProperties(
+                            focusable = false,
+                            clippingEnabled = true,
+                            excludeFromSystemGesture = false
+                        ),
+                            modifier = Modifier.background(
+                                color = MaterialTheme.colorScheme.surface,
+                                shape = RoundedCornerShape(8.dp)
+                            )) {
                             DropdownMenuItem(text = {
-                                Text(stringResource(R.string.module_sort_action_first))
+                                Text(stringResource(R.string.module_sort_action_first),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface)
                             }, trailingIcon = {
                                 Checkbox(viewModel.sortActionFirst, null)
                             }, onClick = {
@@ -230,7 +245,9 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                                 }
                             })
                             DropdownMenuItem(text = {
-                                Text(stringResource(R.string.module_sort_enabled_first))
+                                Text(stringResource(R.string.module_sort_enabled_first),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface)
                             }, trailingIcon = {
                                 Checkbox(viewModel.sortEnabledFirst, null)
                             }, onClick = {
@@ -243,11 +260,11 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                                 }
                             })
 
-                            HorizontalDivider()
-
                             // 修改备份选项
                             DropdownMenuItem(
-                                text = { Text(stringResource(R.string.backup_modules)) },
+                                text = { Text(stringResource(R.string.backup_modules),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Outlined.Download,
@@ -270,7 +287,9 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
 
                             // 修改还原选项
                             DropdownMenuItem(
-                                text = { Text(stringResource(R.string.restore_modules)) },
+                                text = { Text(stringResource(R.string.restore_modules),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Outlined.Refresh,
@@ -410,7 +429,7 @@ private fun ModuleList(
             withContext(Dispatchers.IO) {
                 runCatching {
                     OkHttpClient().newCall(
-                        okhttp3.Request.Builder().url(changelogUrl).build()
+                        Request.Builder().url(changelogUrl).build()
                     ).execute().body!!.string()
                 }
             }
