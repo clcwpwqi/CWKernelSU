@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import shirkneko.zako.mksu.Natives
 import shirkneko.zako.mksu.R
 import shirkneko.zako.mksu.ui.component.SearchAppBar
+import shirkneko.zako.mksu.ui.util.ModuleModify
 import shirkneko.zako.mksu.ui.viewmodel.SuperUserViewModel
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -42,6 +43,12 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val listState = rememberLazyListState()
+    val context = LocalContext.current
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    // 添加备份和还原启动器
+    val backupLauncher = ModuleModify.rememberAllowlistBackupLauncher(context, snackBarHostState)
+    val restoreLauncher = ModuleModify.rememberAllowlistRestoreLauncher(context, snackBarHostState)
 
     LaunchedEffect(key1 = navigator) {
         viewModel.search = ""
@@ -97,12 +104,25 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
                                 viewModel.showSystemApps = !viewModel.showSystemApps
                                 showDropdown = false
                             })
+                            DropdownMenuItem(text = {
+                                Text(stringResource(R.string.backup_allowlist))
+                            }, onClick = {
+                                backupLauncher.launch(ModuleModify.createAllowlistBackupIntent())
+                                showDropdown = false
+                            })
+                            DropdownMenuItem(text = {
+                                Text(stringResource(R.string.restore_allowlist))
+                            }, onClick = {
+                                restoreLauncher.launch(ModuleModify.createAllowlistRestoreIntent())
+                                showDropdown = false
+                            })
                         }
                     }
                 },
                 scrollBehavior = scrollBehavior
             )
         },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         PullToRefreshBox(
