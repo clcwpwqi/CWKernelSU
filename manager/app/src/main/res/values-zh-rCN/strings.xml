@@ -177,4 +177,7 @@
     <string name="settings_restore_default">恢复默认</string>
     <string name="home_android_version">Android 版本</string>
     <string name="home_device_model">设备</string>
+    <string name="su_not_allowed">su不允许</string>
+    <string name="settings_disable_su">设置禁用su</string>
+    <string name="settings_disable_su_summary">设置禁用su摘要</string>
 </resources>

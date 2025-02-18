@@ -179,4 +179,7 @@
     <string name="settings_restore_default">restore default</string>
     <string name="home_android_version">Android version</string>
     <string name="home_device_model">device model</string>
+    <string name="su_not_allowed">su not allowed</string>
+    <string name="settings_disable_su">settings disable su</string>
+    <string name="settings_disable_su_summary">settings disable su summary</string>
 </resources>
