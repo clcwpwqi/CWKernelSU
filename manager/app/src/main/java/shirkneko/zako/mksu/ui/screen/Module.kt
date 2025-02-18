@@ -39,6 +39,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -110,6 +111,9 @@ import shirkneko.zako.mksu.ui.viewmodel.ModuleViewModel
 import shirkneko.zako.mksu.ui.webui.WebUIActivity
 import okhttp3.OkHttpClient
 import shirkneko.zako.mksu.ui.util.ModuleModify
+import shirkneko.zako.mksu.ui.theme.CardConfig
+import shirkneko.zako.mksu.ui.theme.getCardColors
+import shirkneko.zako.mksu.ui.theme.getCardElevation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -568,7 +572,8 @@ fun ModuleItem(
     onClick: (ModuleViewModel.ModuleInfo) -> Unit
 ) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth()
+        colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
     ) {
         val textDecoration = if (!module.remove) null else TextDecoration.LineThrough
         val interactionSource = remember { MutableInteractionSource() }

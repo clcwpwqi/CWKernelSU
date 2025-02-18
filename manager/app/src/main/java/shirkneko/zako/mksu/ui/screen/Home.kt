@@ -43,6 +43,9 @@ import shirkneko.zako.mksu.ui.util.*
 import shirkneko.zako.mksu.ui.util.module.LatestVersionInfo
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import shirkneko.zako.mksu.ui.theme.CardConfig
+import shirkneko.zako.mksu.ui.theme.getCardColors
+import shirkneko.zako.mksu.ui.theme.getCardElevation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(start = true)
@@ -228,10 +231,8 @@ private fun StatusCard(
     onClickInstall: () -> Unit = {}
 ) {
     ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(containerColor = run {
-            if (ksuVersion != null) MaterialTheme.colorScheme.secondaryContainer
-            else MaterialTheme.colorScheme.errorContainer
-        })
+        colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
     ) {
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -334,9 +335,8 @@ fun WarningCard(
     message: String, color: Color = MaterialTheme.colorScheme.error, onClick: (() -> Unit)? = null
 ) {
     ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = color
-        )
+        colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
     ) {
         Row(
             modifier = Modifier
@@ -356,7 +356,10 @@ fun LearnMoreCard() {
     val uriHandler = LocalUriHandler.current
     val url = stringResource(R.string.home_learn_kernelsu_url)
 
-    ElevatedCard {
+    ElevatedCard(
+        colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
+    ) {
 
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -383,7 +386,10 @@ fun LearnMoreCard() {
 fun DonateCard() {
     val uriHandler = LocalUriHandler.current
 
-    ElevatedCard {
+    ElevatedCard(
+        colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
+    ) {
 
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -410,7 +416,10 @@ fun DonateCard() {
 private fun InfoCard() {
     val context = LocalContext.current
 
-    ElevatedCard {
+    ElevatedCard(
+        colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -432,14 +441,19 @@ private fun InfoCard() {
             InfoCardItem(stringResource(R.string.home_kernel), uname.release)
 
             Spacer(Modifier.height(16.dp))
+            val androidVersion = Build.VERSION.RELEASE
+            InfoCardItem(stringResource(R.string.home_android_version), androidVersion)
+
+            Spacer(Modifier.height(16.dp))
+            val deviceModel = Build.MODEL
+            InfoCardItem(stringResource(R.string.home_device_model), deviceModel)
+
+            Spacer(Modifier.height(16.dp))
             val managerVersion = getManagerVersion(context)
             InfoCardItem(
                 stringResource(R.string.home_manager_version),
                 "${managerVersion.first} (${managerVersion.second})"
             )
-
-            Spacer(Modifier.height(16.dp))
-            InfoCardItem(stringResource(R.string.home_fingerprint), Build.FINGERPRINT)
 
             Spacer(Modifier.height(16.dp))
             InfoCardItem(stringResource(R.string.home_selinux_status), getSELinuxStatus()
@@ -456,18 +470,9 @@ private fun InfoCard() {
                 val susSUMode = if (isSUS_SU) " $susSUModeLabel $susSUModeValue" else ""
 
                 val label = stringResource(R.string.home_susfs_version)  // 获取 label 的值
+                val content = "${getSuSFSVersion()} (${getSuSFSVariant()})$susSUMode"
 
-                Text(
-                    text = label,  // 显示 label
-                    style = MaterialTheme.typography.titleMedium,  // 使用合适的样式
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Text(
-                    text = "${getSuSFSVersion()} (${getSuSFSVariant()})$susSUMode",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                InfoCardItem(label, content)
             }
         }
     }

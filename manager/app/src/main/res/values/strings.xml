@@ -174,4 +174,9 @@
     <string name="restore_allowlist">Restore Allowlist</string>
     <string name="settings_custom_background">settings custom background</string>
     <string name="settings_custom_background_summary">settings custom background summary</string>
+    <string name="settings_card_manage">card manage</string>
+    <string name="settings_card_alpha">card alpha</string>
+    <string name="settings_restore_default">restore default</string>
+    <string name="home_android_version">Android version</string>
+    <string name="home_device_model">device model</string>
 </resources>

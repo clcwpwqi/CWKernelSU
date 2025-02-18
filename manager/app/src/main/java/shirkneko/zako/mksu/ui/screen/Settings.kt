@@ -96,13 +96,20 @@ import shirkneko.zako.mksu.ui.util.susfsSUS_SU_2
 import shirkneko.zako.mksu.ui.util.susfsSUS_SU_Mode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Wallpaper
 import shirkneko.zako.mksu.ui.theme.ThemeConfig
 import shirkneko.zako.mksu.ui.theme.saveCustomBackground
 import androidx.compose.material3.Slider
 import androidx.compose.material.icons.filled.Opacity
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.ui.graphics.Color
+import shirkneko.zako.mksu.ui.theme.CardConfig
+import shirkneko.zako.mksu.ui.theme.saveCardConfig
 
 /**
  * @author weishu
@@ -214,48 +221,99 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                 }
             }
 
+            var isCustomBackgroundEnabled by rememberSaveable { mutableStateOf(ThemeConfig.customBackgroundUri != null) }
+
+// 定义图片选择器
             val pickImageLauncher = rememberLauncherForActivityResult(
                 ActivityResultContracts.GetContent()
             ) { uri: Uri? ->
                 uri?.let {
                     context.saveCustomBackground(it)
+                    // 选择图片成功后，更新开关状态为开启
+                    isCustomBackgroundEnabled = true
                 }
             }
 
-            ListItem(
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.Wallpaper,
-                        stringResource(id = R.string.settings_custom_background)
-                    )
-                },
-                headlineContent = {
-                    Text(stringResource(id = R.string.settings_custom_background))
-                },
-                supportingContent = {
-                    Text(stringResource(id = R.string.settings_custom_background_summary))
-                },
-                trailingContent = {
-                    IconButton(onClick = {
-                        if (ThemeConfig.customBackgroundUri != null) {
-                            context.saveCustomBackground(null)
-                        } else {
-                            pickImageLauncher.launch("image/*")
-                        }
-                    }) {
-                        Icon(
-                            if (ThemeConfig.customBackgroundUri != null)
-                                Icons.Filled.Clear
-                            else
-                                Icons.Filled.Add,
-                            contentDescription = null
-                        )
-                    }
-                },
-                modifier = Modifier.clickable {
+// 使用 SwitchItem 替代原来的 ListItem
+            SwitchItem(
+                icon = Icons.Filled.Wallpaper,
+                title = stringResource(id = R.string.settings_custom_background),
+                summary = stringResource(id = R.string.settings_custom_background_summary),
+                checked = isCustomBackgroundEnabled
+            ) { isChecked ->
+                if (isChecked) {
+                    // 开关打开时，启动图片选择器
                     pickImageLauncher.launch("image/*")
-                },
-            )
+                } else {
+                    // 开关关闭时，清除自定义背景
+                    context.saveCustomBackground(null)
+                    // 更新开关状态为关闭
+                    isCustomBackgroundEnabled = false
+                }
+            }
+            var showCardSettings by remember { mutableStateOf(false) }
+
+// 当自定义背景启用时，显示折叠项目
+            if (ThemeConfig.customBackgroundUri != null) {
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.ExpandMore,
+                            stringResource(id = R.string.settings_card_manage)
+                        )
+                    },
+                    headlineContent = {
+                        Text(stringResource(id = R.string.settings_card_manage))
+                    },
+                    modifier = Modifier.clickable {
+                        showCardSettings = !showCardSettings
+                    }
+                )
+
+                if (showCardSettings) {
+                    // 卡片透明度设置
+                    var cardAlpha by rememberSaveable { mutableStateOf(CardConfig.cardAlpha) }
+                    ListItem(
+                        leadingContent = {
+                            Icon(
+                                Icons.Filled.Opacity,
+                                stringResource(id = R.string.settings_card_alpha)
+                            )
+                        },
+                        headlineContent = {
+                            Text(stringResource(id = R.string.settings_card_alpha))
+                        },
+                        supportingContent = {
+                            // 自定义 Slider 样式
+                            Slider(
+                                value = cardAlpha,
+                                onValueChange = { newValue ->
+                                    cardAlpha = newValue
+                                    CardConfig.cardAlpha = newValue
+                                    saveCardConfig(context)
+                                },
+                                valueRange = 0f..1f,
+                                thumb = {
+                                    // 不绘制滑动标识
+                                },
+                                colors = getSliderColors(cardAlpha)
+                            )
+                        }
+                    )
+
+                    // 卡片阴影设置
+                    // 如果打开自定义背景，阴影配置生效
+                    if (ThemeConfig.customBackgroundUri != null) {
+                        CardConfig.cardElevation = 0.dp
+                        saveCardConfig(context)
+                    }
+                }
+                else {
+                    // 如果没有开启自定义背景，使用默认的卡片阴影配置
+                    CardConfig.cardElevation = CardConfig.defaultElevation
+                    saveCardConfig(context)
+                }
+            }
 
             var checkUpdate by rememberSaveable {
                 mutableStateOf(
@@ -546,4 +604,14 @@ private fun TopBar(
 @Composable
 private fun SettingsPreview() {
     SettingScreen(EmptyDestinationsNavigator)
+}
+
+@Composable
+fun getSliderColors(value: Float): SliderColors {
+    val activeColor = Color.Magenta.copy(alpha = value)
+    val inactiveColor = Color.Gray.copy(alpha = 1 - value)
+    return SliderDefaults.colors(
+        activeTrackColor = activeColor,
+        inactiveTrackColor = inactiveColor
+    )
 }

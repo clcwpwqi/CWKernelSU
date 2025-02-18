@@ -1,8 +1,10 @@
 package shirkneko.zako.mksu.ui.theme
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +26,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.background
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 private val DarkColorScheme = darkColorScheme(
     primary = YELLOW,
@@ -45,15 +50,41 @@ object ThemeConfig {
     var customBackgroundUri by mutableStateOf<Uri?>(null)
 }
 
+// 复制图片到应用内部存储
+fun Context.copyImageToInternalStorage(uri: Uri): Uri? {
+    try {
+        val contentResolver: ContentResolver = contentResolver
+        val inputStream: InputStream = contentResolver.openInputStream(uri)!!
+        val fileName = "custom_background.jpg"
+        val file = File(filesDir, fileName)
+        val outputStream = FileOutputStream(file)
+        val buffer = ByteArray(4 * 1024)
+        var read: Int
+        while (inputStream.read(buffer).also { read = it } != -1) {
+            outputStream.write(buffer, 0, read)
+        }
+        outputStream.flush()
+        outputStream.close()
+        inputStream.close()
+        return Uri.fromFile(file)
+    } catch (e: Exception) {
+        Log.e("ImageCopy", "Failed to copy image: ${e.message}")
+        return null
+    }
+}
+
 @Composable
 fun KernelSUTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+    // 在应用启动时加载自定义背景设置
+    context.loadCustomBackground()
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context).copy(
                 background = Color.Transparent,
                 surface = Color.Transparent
@@ -83,7 +114,14 @@ fun KernelSUTheme(
                         modifier = Modifier
                             .fillMaxSize()
                             .paint(
-                                painter = rememberAsyncImagePainter(uri),
+                                painter = rememberAsyncImagePainter(
+                                    model = uri,
+                                    onError = {
+                                        // 图片加载失败，清空 Uri 并保存
+                                        ThemeConfig.customBackgroundUri = null
+                                        context.saveCustomBackground(null)
+                                    }
+                                ),
                                 contentScale = ContentScale.Crop
                             )
                     )
@@ -133,13 +171,14 @@ fun KernelSUTheme(
     }
 }
 
-// 用于保存和加载背景图片URI的扩展函数
+// 用于保存和加载背景图片 URI 的扩展函数
 fun Context.saveCustomBackground(uri: Uri?) {
+    val newUri = uri?.let { copyImageToInternalStorage(it) }
     getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
         .edit()
-        .putString("custom_background", uri?.toString())
+        .putString("custom_background", newUri?.toString())
         .apply()
-    ThemeConfig.customBackgroundUri = uri
+    ThemeConfig.customBackgroundUri = newUri
 }
 
 fun Context.loadCustomBackground() {
