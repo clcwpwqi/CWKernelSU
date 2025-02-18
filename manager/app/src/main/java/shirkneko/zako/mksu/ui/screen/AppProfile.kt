@@ -1,6 +1,5 @@
 package shirkneko.zako.mksu.ui.screen
 
-import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -318,7 +317,6 @@ private fun ProfileBox(
     })
 }
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun AppMenuBox(packageName: String, content: @Composable () -> Unit) {
 

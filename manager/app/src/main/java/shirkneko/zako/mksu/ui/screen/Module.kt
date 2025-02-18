@@ -256,7 +256,8 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                             if (userConfirmed) {
                                 navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
                                 viewModel.markNeedRefresh()
-				Log.i("ModuleScreen", "select zip result: ${result.data}")
+				
+				Log.i("ModuleScreen", "select zip result: ${it.data}")
                             }
                         }
                     }

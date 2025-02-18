@@ -14,7 +14,7 @@ add_library(kernelsu
         SHARED
         jni.cc
         ksu.cc
-)
+        )
 
 find_library(log-lib log)
 

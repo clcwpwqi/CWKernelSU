@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ContactPage
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
@@ -103,6 +104,9 @@ import shirkneko.zako.mksu.ui.theme.ThemeConfig
 import shirkneko.zako.mksu.ui.theme.saveCustomBackground
 import androidx.compose.material3.Slider
 import androidx.compose.material.icons.filled.Opacity
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.ui.graphics.Color
@@ -187,24 +191,25 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     umountChecked = it
                 }
             }
-            if (Natives.version >= Natives.MINIMAL_SUPPORTED_SU_COMPAT) {
-            var isSuDisabled by rememberSaveable {
-                mutableStateOf(!Natives.isSuEnabled())
-            }
-            SwitchItem(
-                icon = Icons.Filled.RemoveModerator,
-                title = stringResource(id = R.string.settings_disable_su),
-                summary = stringResource(id = R.string.settings_disable_su_summary),
-                checked = isSuDisabled,
-            ) { checked ->
-                val shouldEnable = !checked
-                if (Natives.setSuEnabled(shouldEnable)) {
-                    isSuDisabled = !shouldEnable
+	    
+	    if (Natives.version >= Natives.MINIMAL_SUPPORTED_SU_COMPAT) {
+                var isSuDisabled by rememberSaveable {
+                    mutableStateOf(!Natives.isSuEnabled())
+                }
+                SwitchItem(
+                    icon = Icons.Filled.RemoveModerator,
+                    title = stringResource(id = R.string.settings_disable_su),
+                    summary = stringResource(id = R.string.settings_disable_su_summary),
+                    checked = isSuDisabled,
+                ) { checked ->
+                    val shouldEnable = !checked
+                    if (Natives.setSuEnabled(shouldEnable)) {
+                        isSuDisabled = !shouldEnable
+                    }
                 }
             }
-        }
-	    
 
+            val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
             val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
