@@ -172,4 +172,6 @@
     <string name="allowlist_restore_failed">Allowlist restore failed: %1$s</string>
     <string name="backup_allowlist">Backup Allowlist</string>
     <string name="restore_allowlist">Restore Allowlist</string>
+    <string name="settings_custom_background">settings custom background</string>
+    <string name="settings_custom_background_summary">settings custom background summary</string>
 </resources>

@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ContactPage
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
@@ -97,6 +96,13 @@ import shirkneko.zako.mksu.ui.util.susfsSUS_SU_2
 import shirkneko.zako.mksu.ui.util.susfsSUS_SU_Mode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Wallpaper
+import shirkneko.zako.mksu.ui.theme.ThemeConfig
+import shirkneko.zako.mksu.ui.theme.saveCustomBackground
+import androidx.compose.material3.Slider
+import androidx.compose.material.icons.filled.Opacity
 
 /**
  * @author weishu
@@ -207,6 +213,49 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     }
                 }
             }
+
+            val pickImageLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.GetContent()
+            ) { uri: Uri? ->
+                uri?.let {
+                    context.saveCustomBackground(it)
+                }
+            }
+
+            ListItem(
+                leadingContent = {
+                    Icon(
+                        Icons.Filled.Wallpaper,
+                        stringResource(id = R.string.settings_custom_background)
+                    )
+                },
+                headlineContent = {
+                    Text(stringResource(id = R.string.settings_custom_background))
+                },
+                supportingContent = {
+                    Text(stringResource(id = R.string.settings_custom_background_summary))
+                },
+                trailingContent = {
+                    IconButton(onClick = {
+                        if (ThemeConfig.customBackgroundUri != null) {
+                            context.saveCustomBackground(null)
+                        } else {
+                            pickImageLauncher.launch("image/*")
+                        }
+                    }) {
+                        Icon(
+                            if (ThemeConfig.customBackgroundUri != null)
+                                Icons.Filled.Clear
+                            else
+                                Icons.Filled.Add,
+                            contentDescription = null
+                        )
+                    }
+                },
+                modifier = Modifier.clickable {
+                    pickImageLauncher.launch("image/*")
+                },
+            )
 
             var checkUpdate by rememberSaveable {
                 mutableStateOf(

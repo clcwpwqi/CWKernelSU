@@ -170,4 +170,6 @@
     <string name="allowlist_restore_failed">应用列表还原失败：%1$s</string>
     <string name="backup_allowlist">备份应用列表</string>
     <string name="restore_allowlist">还原应用列表</string>
+    <string name="settings_custom_background">自定义背景</string>
+    <string name="settings_custom_background_summary">选择一张图片作为应用背景</string>
 </resources>

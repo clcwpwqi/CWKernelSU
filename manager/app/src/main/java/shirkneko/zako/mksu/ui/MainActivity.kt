@@ -43,6 +43,7 @@ import shirkneko.zako.mksu.Natives
 import shirkneko.zako.mksu.ksuApp
 import shirkneko.zako.mksu.ui.screen.BottomBarDestination
 import shirkneko.zako.mksu.ui.theme.KernelSUTheme
+import shirkneko.zako.mksu.ui.theme.loadCustomBackground
 import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
 import shirkneko.zako.mksu.ui.util.rootAvailable
 import shirkneko.zako.mksu.ui.util.install
@@ -50,7 +51,6 @@ import shirkneko.zako.mksu.ui.util.install
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         // Enable edge to edge
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -59,8 +59,11 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-	val isManager = Natives.becomeManager(ksuApp.packageName)
-	if (isManager) install()
+        // 加载保存的背景设置
+        loadCustomBackground()
+
+        val isManager = Natives.becomeManager(ksuApp.packageName)
+        if (isManager) install()
 
         setContent {
             KernelSUTheme {
