@@ -109,19 +109,6 @@ import androidx.compose.ui.graphics.Color
 import shirkneko.zako.mksu.ui.theme.CardConfig
 import shirkneko.zako.mksu.ui.theme.saveCardConfig
 
-
-class SomeClass {
-    companion object {
-        lateinit var appContext: Context
-
-        // 在静态代码块中使用 appContext 之前进行初始化
-        fun init(context: Context) {
-            appContext = context
-        }
-    }
-}
-
-
 /**
  * @author weishu
  * @date 2023/1/1.
@@ -132,11 +119,6 @@ class SomeClass {
 fun SettingScreen(navigator: DestinationsNavigator) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val snackBarHost = LocalSnackbarHost.current
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        SomeClass.init(context)
-    }
 
     Scaffold(
         topBar = {
