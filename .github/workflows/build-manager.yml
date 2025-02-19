@@ -207,6 +207,28 @@ jobs:
       - name: Rename APK
         run: |
             find app/build/outputs/apk/release -name "*.apk" -exec mv {} "MKSU-ci_${CI_VERSION}.apk" \;
+      - name: Create CI Release
+        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/susfs' ) || github.ref_type == 'tag' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.CI_VERSION }}
+          release_name: ${{ env.CI_VERSION }}
+          body: |
+            CI build release.
+          draft: false
+          prerelease: true
+      - name: Upload APK to Release
+        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/susfs' ) || github.ref_type == 'tag' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: manager/app/build/outputs/apk/release/MKSU-ci_${{ env.CI_VERSION }}.apk
+          asset_name: MKSU-ci_${{ env.CI_VERSION }}.apk
+          asset_content_type: application/vnd.android.package-archive
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/susfs' ) || github.ref_type == 'tag' }}
@@ -220,7 +242,7 @@ jobs:
         with:
           name: "mappings"
           path: "manager/app/build/outputs/mapping/release/"
-
+      
       - name: Bot session cache
         if: github.event_name != 'pull_request' && steps.need_upload.outputs.UPLOAD == 'true'
         id: bot_session_cache
