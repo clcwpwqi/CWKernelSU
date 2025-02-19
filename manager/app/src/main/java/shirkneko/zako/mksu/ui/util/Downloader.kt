@@ -63,7 +63,7 @@ fun download(
 
 fun checkNewVersion(): LatestVersionInfo {
     // 改为具体release接口（示例ID为201165726）
-    val url = "https://api.github.com/repos/ShirkNeko/KernelSU/releases/Latest"
+    val url = "api.github.com/repos/ShirkNeko/KernelSU/releases/latest"
     val defaultValue = LatestVersionInfo()
     return runCatching {
         okhttp3.OkHttpClient().newCall(okhttp3.Request.Builder().url(url).build()).execute()
