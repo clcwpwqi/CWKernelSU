@@ -21,11 +21,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ContactPage
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Fence
+import androidx.compose.material.icons.filled.FolderDelete
 import androidx.compose.material.icons.filled.RemoveModerator
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
@@ -177,7 +179,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                 mutableStateOf(Natives.isDefaultUmountModules())
             }
             SwitchItem(
-                icon = Icons.Filled.RemoveModerator,
+                icon = Icons.Filled.FolderDelete,
                 title = stringResource(id = R.string.settings_umount_modules_default),
                 summary = stringResource(id = R.string.settings_umount_modules_default_summary),
                 checked = umountChecked
