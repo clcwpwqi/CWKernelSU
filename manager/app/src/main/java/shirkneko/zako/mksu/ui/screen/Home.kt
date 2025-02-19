@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.PowerManager
 import android.system.Os
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
@@ -156,6 +157,11 @@ fun UpdateCard() {
     val newVersionCode = newVersion.versionCode
     val newVersionUrl = newVersion.downloadUrl
     val changelog = newVersion.changelog
+
+    Log.d("UpdateCard", "Current version code: $currentVersionCode")
+    Log.d("UpdateCard", "New version code: $newVersionCode")
+
+
 
     val uriHandler = LocalUriHandler.current
     val title = stringResource(id = R.string.module_changelog)
