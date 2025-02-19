@@ -102,9 +102,6 @@ import shirkneko.zako.mksu.ui.theme.ThemeConfig
 import shirkneko.zako.mksu.ui.theme.saveCustomBackground
 import androidx.compose.material3.Slider
 import androidx.compose.material.icons.filled.Opacity
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.filled.Restore
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.ui.graphics.Color
@@ -187,6 +184,23 @@ fun SettingScreen(navigator: DestinationsNavigator) {
             ) {
                 if (Natives.setDefaultUmountModules(it)) {
                     umountChecked = it
+                }
+            }
+
+            if (Natives.version >= Natives.MINIMAL_SUPPORTED_SU_COMPAT) {
+                var isSuDisabled by rememberSaveable {
+                    mutableStateOf(!Natives.isSuEnabled())
+                }
+                SwitchItem(
+                    icon = Icons.Filled.RemoveModerator,
+                    title = stringResource(id = R.string.settings_disable_su),
+                    summary = stringResource(id = R.string.settings_disable_su_summary),
+                    checked = isSuDisabled,
+                ) { checked ->
+                    val shouldEnable = !checked
+                    if (Natives.setSuEnabled(shouldEnable)) {
+                        isSuDisabled = !shouldEnable
+                    }
                 }
             }
 
