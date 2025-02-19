@@ -180,4 +180,5 @@
     <string name="su_not_allowed">不允许授予 %s 超级用户权限</string>
     <string name="settings_disable_su">禁用 su 兼容性</string>
     <string name="settings_disable_su_summary">临时禁止任何应用程序通过 su 命令获取 Root 权限（现有的 Root 进程不受影响）</string>
+    <string name="using_mksu_manager">你正在使用的是MKSU第三方管理器</string>
 </resources>

@@ -1,7 +1,7 @@
 package shirkneko.zako.mksu.ui.theme
 
-
 import android.content.Context
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,41 +10,33 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 
 object CardConfig {
-    val defaultElevation: Dp = 4.dp
+    val defaultElevation: Dp = 4.dp  // 默认阴影值
 
-    // 卡片透明度，范围从 0f 到 1f
-    var cardAlpha by mutableStateOf(1f)
-    // 卡片阴影大小，单位为 dp
-    var cardElevation by mutableStateOf(4.dp)
-}
+    var cardAlpha by mutableStateOf(1f) // 默认100%透明度
+    var cardElevation by mutableStateOf(defaultElevation)
 
-fun saveCardConfig(context: Context) {
-    val prefs = context.getSharedPreferences("card_prefs", Context.MODE_PRIVATE)
-    prefs.edit()
-       .putFloat("card_alpha", CardConfig.cardAlpha)
-       .putFloat("card_elevation", CardConfig.cardElevation.value)
-       .apply()
-}
+    fun save(context: Context) {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        prefs.edit().apply {
+            putFloat("card_alpha", cardAlpha)
+            putBoolean("custom_background_enabled", cardElevation == 0.dp)
+            apply()
+        }
+    }
 
-fun loadCardConfig(context: Context) {
-    val prefs = context.getSharedPreferences("card_prefs", Context.MODE_PRIVATE)
-    CardConfig.cardAlpha = prefs.getFloat("card_alpha", 1f)
-    CardConfig.cardElevation = prefs.getFloat("card_elevation", 4f).dp
+    fun load(context: Context) {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        cardAlpha = prefs.getFloat("card_alpha", 1f) // 默认1f
+        cardElevation = if (prefs.getBoolean("custom_background_enabled", false)) 0.dp else defaultElevation
+    }
 }
 
 @Composable
-fun getCardColors(originalColor: Color): androidx.compose.material3.CardColors {
-    val adjustedColor = originalColor.copy(alpha = CardConfig.cardAlpha)
-    return CardDefaults.elevatedCardColors(
-        containerColor = adjustedColor,
-        contentColor = if (adjustedColor.luminance() > 0.5) Color.Black else Color.White
-    )
-}
+fun getCardColors(originalColor: Color) = CardDefaults.elevatedCardColors(
+    containerColor = originalColor.copy(alpha = CardConfig.cardAlpha),
+    contentColor = if (originalColor.luminance() > 0.5) Color.Black else Color.White
+)
 
-fun getCardElevation(): Dp {
-    return CardConfig.cardElevation
-}
+fun getCardElevation() = CardConfig.cardElevation

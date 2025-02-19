@@ -43,9 +43,14 @@ import shirkneko.zako.mksu.ui.util.*
 import shirkneko.zako.mksu.ui.util.module.LatestVersionInfo
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import shirkneko.zako.mksu.ui.theme.CardConfig
 import shirkneko.zako.mksu.ui.theme.getCardColors
 import shirkneko.zako.mksu.ui.theme.getCardElevation
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(start = true)
@@ -103,6 +108,31 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                     .getBoolean("check_update", true)
             if (checkUpdate) {
                 UpdateCard()
+            }
+            var clickCount by remember { mutableStateOf(0) }
+            AnimatedVisibility(
+                visible = clickCount < 3,
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                ElevatedCard(
+                    colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+                    elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                clickCount++
+                            }
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.using_mksu_manager),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
             InfoCard()
             DonateCard()

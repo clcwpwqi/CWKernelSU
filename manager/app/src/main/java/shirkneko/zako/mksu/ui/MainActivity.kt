@@ -42,6 +42,7 @@ import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import shirkneko.zako.mksu.Natives
 import shirkneko.zako.mksu.ksuApp
 import shirkneko.zako.mksu.ui.screen.BottomBarDestination
+import shirkneko.zako.mksu.ui.theme.CardConfig
 import shirkneko.zako.mksu.ui.theme.KernelSUTheme
 import shirkneko.zako.mksu.ui.theme.loadCustomBackground
 import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
@@ -51,6 +52,7 @@ import shirkneko.zako.mksu.ui.util.install
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         // Enable edge to edge
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -61,6 +63,8 @@ class MainActivity : ComponentActivity() {
 
         // 加载保存的背景设置
         loadCustomBackground()
+        CardConfig.load(applicationContext)
+
 
         val isManager = Natives.becomeManager(ksuApp.packageName)
         if (isManager) install()
