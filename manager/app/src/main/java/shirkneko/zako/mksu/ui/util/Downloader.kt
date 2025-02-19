@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.core.content.ContextCompat
@@ -62,21 +63,29 @@ fun download(
 }
 
 fun checkNewVersion(): LatestVersionInfo {
-    // 改为具体release接口（示例ID为201165726）
-    val url = "api.github.com/repos/ShirkNeko/KernelSU/releases/latest"
+    // 改为新的 release 接口
+    val url = "https://api.github.com/repos/ShirkNeko/KernelSU/releases/latest"
     val defaultValue = LatestVersionInfo()
     return runCatching {
         okhttp3.OkHttpClient().newCall(okhttp3.Request.Builder().url(url).build()).execute()
             .use { response ->
-                if (!response.isSuccessful) return defaultValue
-                val body = response.body?.string() ?: return defaultValue
+                if (!response.isSuccessful) {
+                    Log.d("CheckUpdate", "Network request failed: ${response.message}")
+                    return defaultValue
+                }
+                val body = response.body?.string()
+                if (body == null) {
+                    Log.d("CheckUpdate", "Response body is null")
+                    return defaultValue
+                }
+                Log.d("CheckUpdate", "Response body: $body")
                 val json = org.json.JSONObject(body)
 
-                // 直接从tag_name提取版本号（如v1.0.3）
+                // 直接从 tag_name 提取版本号（如 v1.1）
                 val tagName = json.optString("tag_name", "")
-                val versionName = tagName.removePrefix("v") // 移除前缀"v"
+                val versionName = tagName.removePrefix("v") // 移除前缀 "v"
 
-                // 从body字段获取更新日志（保留换行符）
+                // 从 body 字段获取更新日志（保留换行符）
                 val changelog = json.optString("body")
                     .replace("\\r\\n", "\n") // 转换换行符
 
@@ -86,19 +95,18 @@ fun checkNewVersion(): LatestVersionInfo {
                     val name = asset.getString("name")
                     if (!name.endsWith(".apk")) continue
 
-                    // 匹配文件名中的版本代码（如12187）
+                    // 匹配文件名中的版本代码（如 12198）
                     val regex = Regex("_v\\d+\\.\\d+\\.\\d+_(\\d+)-")
-                    val matchResult = regex.find(name)
-                    if (matchResult != null) {
-                        val versionCode = matchResult.groupValues[1].toInt()
-                        val downloadUrl = asset.getString("browser_download_url")
-                        return LatestVersionInfo(
-                            versionCode,
-                            downloadUrl,
-                            changelog,
-                            versionName // 添加versionName到返回值（需修改LatestVersionInfo类）
-                        )
-                    }
+                    val matchResult = regex.find(name) ?: continue
+                    val versionCode = matchResult.groupValues[1].toInt()
+
+                    val downloadUrl = asset.getString("browser_download_url")
+                    return LatestVersionInfo(
+                        versionCode,
+                        downloadUrl,
+                        changelog,
+                        versionName // 添加 versionName 到返回值（需修改 LatestVersionInfo 类）
+                    )
                 }
                 defaultValue
             }
