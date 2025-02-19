@@ -48,7 +48,7 @@ jobs:
             cd tmp
             git config --global init.defaultBranch bot
             git config --global user.name 'Bot'
-            git config --global user.email 'bot@github.5ec1cff.io'
+            git config --global user.email 'bot@github.shirkneko.io'
             git init .
             git remote add origin https://github.com/${{ github.repository }}
             CURRENT_COMMIT="${{ github.event.head_commit.id }}"
