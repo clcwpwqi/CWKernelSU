@@ -200,35 +200,6 @@ jobs:
           } >> gradle.properties
           sed -i 's/org.gradle.configuration-cache=true//g' gradle.properties
           ./gradlew clean assembleRelease
-      - name: Generate version info
-        run: |
-            COMMIT_SHA=$(git rev-parse --short HEAD)
-            echo "CI_VERSION=vCI-$(date +%Y%m%d)-${COMMIT_SHA}" >> $GITHUB_ENV
-      - name: Rename APK
-        run: |
-            find app/build/outputs/apk/release -name "*.apk" -exec mv {} "MKSU-ci_${CI_VERSION}.apk" \;
-      - name: Create CI Release
-        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/susfs' ) || github.ref_type == 'tag' }}
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.CI_VERSION }}
-          release_name: ${{ env.CI_VERSION }}
-          body: |
-            CI build release.
-          draft: false
-          prerelease: true
-      - name: Upload APK to Release
-        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/susfs' ) || github.ref_type == 'tag' }}
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: manager/app/build/outputs/apk/release/MKSU-ci_${{ env.CI_VERSION }}.apk
-          asset_name: MKSU-ci_${{ env.CI_VERSION }}.apk
-          asset_content_type: application/vnd.android.package-archive
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/susfs' ) || github.ref_type == 'tag' }}
