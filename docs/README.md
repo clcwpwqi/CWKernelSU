@@ -1,6 +1,6 @@
-# MKSU
+# MKSU-trilateral
 
-A [KernelSU](https://github.com/tiann/KernelSU/commit/eeffecbd1bd7d49672a1c6bd52d95d28a42acb21)-based root solution for Android devices.
+A [KernelSU](https://github.com/5ec1cff/KernelSU)-based root solution for Android devices.
 
 **Experimental. Use at your own risk.**
 
@@ -9,6 +9,8 @@ A [KernelSU](https://github.com/tiann/KernelSU/commit/eeffecbd1bd7d49672a1c6bd52
 1. Kernel-based `su` and root access management.
 2. Module system not based on [OverlayFS](https://en.wikipedia.org/wiki/OverlayFS).
 3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
+4. Add susfs display
+5. More customization
 
 ## License
 
@@ -18,6 +20,7 @@ A [KernelSU](https://github.com/tiann/KernelSU/commit/eeffecbd1bd7d49672a1c6bd52
 ## Credits
 
 - [KernelSU](https://github.com/tiann/KernelSU): The original project.
+- [MKSU](https://github.com/5ec1cff/KernelSU)：Items used
 - [Kernel-Assisted Superuser](https://git.zx2c4.com/kernel-assisted-superuser/about/): The KernelSU idea.
 - [Magisk](https://github.com/topjohnwu/Magisk): The powerful root tool.
 - [genuine](https://github.com/brevent/genuine/): APK v2 signature validation.
