@@ -95,9 +95,13 @@ fun checkNewVersion(): LatestVersionInfo {
                     val name = asset.getString("name")
                     if (!name.endsWith(".apk")) continue
 
-                    // 匹配文件名中的版本代码（如 12198）
-                    val regex = Regex("_v\\d+\\.\\d+\\.\\d+_(\\d+)-")
-                    val matchResult = regex.find(name) ?: continue
+                    // 修改正则表达式，只匹配 MKSU-trilateral 和版本号
+                    val regex = Regex("MKSU-trilateral.*_(\\d+)-release")
+                    val matchResult = regex.find(name)
+                    if (matchResult == null) {
+                        Log.d("CheckUpdate", "No match found in $name, skipping")
+                        continue
+                    }
                     val versionCode = matchResult.groupValues[1].toInt()
 
                     val downloadUrl = asset.getString("browser_download_url")
@@ -108,10 +112,12 @@ fun checkNewVersion(): LatestVersionInfo {
                         versionName // 添加 versionName 到返回值（需修改 LatestVersionInfo 类）
                     )
                 }
+                Log.d("CheckUpdate", "No valid apk asset found, returning default value")
                 defaultValue
             }
     }.getOrDefault(defaultValue)
 }
+
 
 @Composable
 fun DownloadListener(context: Context, onDownloaded: (Uri) -> Unit) {
@@ -152,3 +158,4 @@ fun DownloadListener(context: Context, onDownloaded: (Uri) -> Unit) {
         }
     }
 }
+
