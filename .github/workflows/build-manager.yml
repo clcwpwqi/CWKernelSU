@@ -200,7 +200,13 @@ jobs:
           } >> gradle.properties
           sed -i 's/org.gradle.configuration-cache=true//g' gradle.properties
           ./gradlew clean assembleRelease
-
+      - name: Generate version info
+        run: |
+            COMMIT_SHA=$(git rev-parse --short HEAD)
+            echo "CI_VERSION=vCI-$(date +%Y%m%d)-${COMMIT_SHA}" >> $GITHUB_ENV
+      - name: Rename APK
+        run: |
+            find app/build/outputs/apk/release -name "*.apk" -exec mv {} "MKSU-ci_${CI_VERSION}.apk" \;
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/susfs' ) || github.ref_type == 'tag' }}
