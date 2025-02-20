@@ -286,7 +286,7 @@ private fun StatusCard(
                     }
 
                     val workingMode = when (lkmMode) {
-                        null -> " <Non-GKI>"
+                        null -> ""
                         true -> " <LKM>"
                         else -> " <GKI>"
                     }
