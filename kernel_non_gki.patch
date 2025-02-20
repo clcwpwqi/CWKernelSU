@@ -796,7 +796,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  #include <linux/uaccess.h>
  #include <linux/workqueue.h>
  
-@@ -44,20 +51,25 @@
+@@ -44,16 +51,20 @@
  	"\n";
  
  static void stop_vfs_read_hook();
@@ -808,22 +808,17 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  static struct work_struct stop_execve_hook_work;
  static struct work_struct stop_input_hook_work;
 -
- #ifdef CONFIG_KSU_SUSFS_SUS_SU
- bool ksu_devpts_hook = false;
- bool susfs_is_sus_su_ready = false;
- #endif // #ifdef CONFIG_KSU_SUSFS_SUS_SU
 +#else
 +bool ksu_vfs_read_hook __read_mostly = true;
 +bool ksu_execveat_hook __read_mostly = true;
 +bool ksu_input_hook __read_mostly = true;
-+#endif
+ #ifdef CONFIG_KSU_SUSFS_SUS_SU
+ bool ksu_devpts_hook = false;
+ bool susfs_is_sus_su_ready = false;
+ #endif // #ifdef CONFIG_KSU_SUSFS_SUS_SU
  
  u32 ksu_devpts_sid;
- 
- void ksu_on_post_fs_data(void)
- {
- 	static bool done = false;
-@@ -146,12 +158,17 @@
+@@ -146,12 +157,17 @@
  
  // IMPORTANT NOTE: the call from execve_handler_pre WON'T provided correct value for envp and flags in GKI version
  int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
@@ -841,7 +836,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	static bool first_app_process = true;
  
  	/* This applies to versions Android 10+ */
-@@ -297,12 +314,17 @@
+@@ -297,12 +313,17 @@
  	return ret;
  }
  
@@ -859,7 +854,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  
  	if (strcmp(current->comm, "init")) {
  		// we are only interest in `init` process
-@@ -405,12 +427,17 @@
+@@ -405,12 +426,17 @@
  	return count >= 3;
  }
  
@@ -877,7 +872,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  		if (val) {
  			// key pressed, count it
  			volumedown_pressed_count += 1;
-@@ -442,12 +469,35 @@
+@@ -442,12 +468,35 @@
  		return true;
  	}
  
@@ -913,7 +908,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	const char __user **filename_user =
  		(const char **)&PT_REGS_PARM1(real_regs);
  	const char __user *const __user *__argv =
-@@ -465,12 +515,24 @@
+@@ -465,12 +514,24 @@
  
  	filename_p = &filename_in;
  	return ksu_handle_execveat_ksud(AT_FDCWD, &filename_p, &argv, NULL,
@@ -938,7 +933,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	unsigned int fd = PT_REGS_PARM1(real_regs);
  	char __user **buf_ptr = (char __user **)&PT_REGS_PARM2(real_regs);
  	size_t count_ptr = (size_t *)&PT_REGS_PARM3(real_regs);
-@@ -484,21 +546,41 @@
+@@ -484,21 +545,41 @@
  	unsigned int *type = (unsigned int *)&PT_REGS_PARM2(regs);
  	unsigned int *code = (unsigned int *)&PT_REGS_PARM3(regs);
  	int *value = (int *)&PT_REGS_CCALL_PARM4(regs);
@@ -980,7 +975,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	.pre_handler = input_handle_event_handler_pre,
  };
  
-@@ -513,43 +595,59 @@
+@@ -513,43 +594,59 @@
  }
  
  static void do_stop_input_hook(struct work_struct *work)
@@ -1040,7 +1035,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	pr_info("ksud: execve_kp: %d\n", ret);
  
  	ret = register_kprobe(&vfs_read_kp);
-@@ -558,15 +656,18 @@
+@@ -558,15 +655,18 @@
  	ret = register_kprobe(&input_event_kp);
  	pr_info("ksud: input_event_kp: %d\n", ret);
  
@@ -1659,7 +1654,7 @@ diff -u a/kernel/selinux/sepolicy.c b/kernel/selinux/sepolicy.c
 diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 --- a/kernel/sucompat.c
 +++ b/kernel/sucompat.c
-@@ -5,255 +5,289 @@
+@@ -5,68 +5,84 @@
  #include <linux/err.h>
  #include <linux/fs.h>
  #include <linux/kprobes.h>
@@ -1763,38 +1758,22 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
  
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) && defined(CONFIG_KSU_SUSFS_SUS_SU)
  struct filename* susfs_ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags) {
--    // const char sh[] = SH_PATH;
--    const char su[] = SU_PATH;
--    struct filename *name = getname_flags(*filename_user, getname_statx_lookup_flags(*flags), NULL);
-+int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags)
-+{
-+	// const char sh[] = SH_PATH;
-+	const char su[] = SU_PATH;
-+        struct filename *name = getname_flags(*filename_user, getname_statx_lookup_flags(*flags), NULL);
- 
--    if (unlikely(IS_ERR(name) || name->name == NULL)) {
-+if (unlikely(IS_ERR(name) || name->name == NULL)) {
-         return name;
-     }
- 
-     if (!ksu_is_allow_uid(current_uid().val)) {
+     // const char sh[] = SH_PATH;
+     const char su[] = SU_PATH;
+@@ -80,176 +96,188 @@
          return name;
      }
  
      if (likely(memcmp(name->name, su, sizeof(su)))) {
          return name;
      }
--
--    const char sh[] = SH_PATH;
-+	const char sh[] = SH_PATH;
++#ifndef KSU_HOOK_WITH_KPROBES
++	if (!ksu_sucompat_hook_state) {
+     const char sh[] = SH_PATH;
      pr_info("vfs_fstatat su->sh!\n");
      memcpy((void *)name->name, sh, sizeof(sh));
      return name;
--}
-+#ifndef KSU_HOOK_WITH_KPROBES
-+	if (!ksu_sucompat_hook_state) {
-+		return 0;
-+	}
+ }
  #endif
  
  int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags)
@@ -1950,8 +1929,7 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
  
      ksu_escape_to_root();
  
--    return 0;
-+	return 0;
+     return 0;
  }
  
  int ksu_handle_devpts(struct inode *inode)
@@ -2007,9 +1985,8 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 -    return 0;
 +	return 0;
  }
--
+ 
  #ifdef CONFIG_KPROBES
-+#ifdef KSU_HOOK_WITH_KPROBES
  static int faccessat_handler_pre(struct kprobe *p, struct pt_regs *regs)
  {
 -    struct pt_regs *real_regs = PT_REAL_REGS(regs);
@@ -2062,68 +2039,30 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 -
  static int pts_unix98_lookup_pre(struct kprobe *p, struct pt_regs *regs)
  {
--    return 0;
-+	struct inode *inode;
-+	struct file *file = (struct file *)PT_REGS_PARM2(regs);
-+	inode = file->f_path.dentry->d_inode;
-+
-+	return ksu_handle_devpts(inode);
+     return 0;
  }
  
  static struct kprobe newfstatat_kp = {
-     .symbol_name = "newfstatat",
-     .pre_handler = newfstatat_handler_pre,
- };
-@@ -268,40 +302,78 @@
-     .pre_handler = execve_handler_pre,
- };
+@@ -269,14 +297,17 @@
  
  static struct kprobe pts_unix98_lookup_kp = {
      .symbol_name = "pts_unix98_lookup",
      .pre_handler = pts_unix98_lookup_pre,
-+static struct kprobe *init_kprobe(const char *name,
-+				  kprobe_pre_handler_t handler)
-+{
-+	struct kprobe *kp = kzalloc(sizeof(struct kprobe), GFP_KERNEL);
-+	if (!kp)
-+		return NULL;
-+	kp->symbol_name = name;
-+	kp->pre_handler = handler;
-+
-+	int ret = register_kprobe(kp);
-+	pr_info("sucompat: register_%s kprobe: %d\n", name, ret);
-+	if (ret) {
-+		kfree(kp);
-+		return NULL;
-+	}
-+
-+	return kp;
- }
+ };
  
-+static void destroy_kprobe(struct kprobe **kp_ptr)
-+{
-+	struct kprobe *kp = *kp_ptr;
-+	if (!kp)
-+		return;
-+	unregister_kprobe(kp);
-+	synchronize_rcu();
-+	kfree(kp);
-+	*kp_ptr = NULL;
-+}
-+
 +static struct kprobe *su_kps[6];
 +
 +// sucompat: permited process can execute 'su' to gain root access.
  void ksu_sucompat_init()
- {
--    int ret;
-+int ret;
+-{
++{	
+     int ret;
  
      ret = register_kprobe(&execve_kp);
      pr_info("sucompat: execve_kp: %d\n", ret);
  
      ret = register_kprobe(&newfstatat_kp);
-     pr_info("sucompat: newfstatat_kp: %d\n", ret);
+@@ -284,21 +315,30 @@
  
      ret = register_kprobe(&faccessat_kp);
      pr_info("sucompat: faccessat_kp: %d\n", ret);
@@ -2140,33 +2079,27 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
  
  void ksu_sucompat_exit()
  {
--    unregister_kprobe(&execve_kp);
-+unregister_kprobe(&execve_kp);
+     unregister_kprobe(&execve_kp);
      unregister_kprobe(&newfstatat_kp);
      unregister_kprobe(&faccessat_kp);
      unregister_kprobe(&pts_unix98_lookup_kp);
--}
--
--#ifdef CONFIG_KSU_SUSFS_SUS_SU
 +	for (int i = 0; i < ARRAY_SIZE(su_kps); i++) {
-+		destroy_kprobe(&su_kps[i]);
-+	}
-+	#ifdef CONFIG_KSU_SUSFS_SUS_SU
++		destroy_kprobe(&su_kps[i]);}
+ }
++#else // We still have non-GKI support!
+ #ifdef CONFIG_KSU_SUSFS_SUS_SU
  extern bool ksu_devpts_hook;
  
  void ksu_susfs_disable_sus_su(void)
  {
      enable_kprobe(&execve_kp);
-     enable_kprobe(&newfstatat_kp);
-@@ -315,8 +387,20 @@
+@@ -313,8 +353,19 @@
      disable_kprobe(&execve_kp);
      disable_kprobe(&newfstatat_kp);
      disable_kprobe(&faccessat_kp);
      disable_kprobe(&pts_unix98_lookup_kp);
      ksu_devpts_hook = true;
  }
--#endif 
-+#else // We still have non-GKI support!
 +void ksu_sucompat_init()
 +{
 +	ksu_sucompat_hook_state = true;
@@ -2178,29 +2111,14 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 +	ksu_sucompat_hook_state = false;
 +	pr_info("ksu_sucompat_hook_state = false!\n");
 +}
-+#endif
- #endif 
+ #endif // CONFIG_KSU_SUSFS_SUS_SU
+ #endif // CONFIG_KPROBES
+
 
 diff -u a/kernel/throne_tracker.c b/kernel/throne_tracker.c
 --- a/kernel/throne_tracker.c
 +++ b/kernel/throne_tracker.c
-@@ -115,12 +115,15 @@
- 	void *private_data;
- 	int depth;
- 	int *stop;
- };
- // https://docs.kernel.org/filesystems/porting.html
- // filldir_t (readdir callbacks) calling conventions have changed. Instead of returning 0 or -E... it returns bool now. false means "no more" (as -E... used to) and true - "keep going" (as 0 in old calling conventions). Rationale: callers never looked at specific -E... values anyway. -> iterate_shared() instances require no changes at all, all filldir_t ones in the tree converted.
-+// Instead of returning 0 or -E... it returns bool now.
-+// false means "no more" (as -E... used to) and true - "keep going" (as 0 in old calling conventions).
-+// Rationale: callers never looked at specific -E... values anyway. -> iterate_shared() instances require no changes at all, all filldir_t ones in the tree converted.
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
- #define FILLDIR_RETURN_TYPE bool
- #define FILLDIR_ACTOR_CONTINUE true
- #define FILLDIR_ACTOR_STOP false
- #else
- #define FILLDIR_RETURN_TYPE int
-@@ -167,24 +170,33 @@
+@@ -167,24 +167,33 @@
  		strscpy(data->dirpath, dirpath, DATA_PATH_LEN);
  		data->depth = my_ctx->depth - 1;
  		list_add_tail(&data->list, my_ctx->data_path_list);
@@ -2234,7 +2152,7 @@ diff -u a/kernel/throne_tracker.c b/kernel/throne_tracker.c
  				// Manager found, clear APK cache list
  				list_for_each_entry_safe(pos, n, &apk_path_hash_list, list) {
  					list_del(&pos->list);
-@@ -204,12 +216,13 @@
+@@ -204,12 +213,13 @@
  
  void search_manager(const char *path, int depth, struct list_head *uid_data)
  {
@@ -2248,13 +2166,13 @@ diff -u a/kernel/throne_tracker.c b/kernel/throne_tracker.c
  	list_for_each_entry(pos, &apk_path_hash_list, list) {
  		pos->exists = false;
  	}
-@@ -247,12 +260,13 @@
+@@ -247,12 +257,13 @@
  			if (pos != &data)
  				kfree(pos);
  		}
  	}
  
- 	
+ 	// Remove stale cached APK entries
 +	pr_info("search manager: cleanup!\n");
  	list_for_each_entry_safe(pos, n, &apk_path_hash_list, list) {
  		if (!pos->exists) {
