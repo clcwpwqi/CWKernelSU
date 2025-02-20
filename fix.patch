@@ -1,5 +1,6 @@
---- kernel/sucompat.c
-+++ kernel/sucompat.c
+diff -u a/kernel/sucompat.c b/kernel/sucompat.c
+--- a/kernel/sucompat.c
++++ b/kernel/sucompat.c
 @@ -21,346 +21,304 @@
  #define SH_PATH "/system/bin/sh"
  
@@ -535,8 +536,9 @@
 +#endif // CONFIG_KSU_SUSFS_SUS_SU
 +#endif // CONFIG_KPROBES
 
---- kernel/ksud.c
-+++ kernel/ksud.c
+diff -u a/kernel/ksud.c b/kernel/ksud.c
+--- a/kernel/ksud.c
++++ b/kernel/ksud.c
 @@ -524,12 +524,16 @@
  }
  
@@ -555,9 +557,9 @@
  	static bool input_hook_stopped = false;
  	if (input_hook_stopped) {
 
-
---- kernel/core_hook.c
-+++ kernel/core_hook.c
+diff -u a/kernel/core_hook.c b/kernel/core_hook.c
+--- a/kernel/core_hook.c
++++ b/kernel/core_hook.c
 @@ -46,23 +46,91 @@
  #include "manager.h"
  #include "selinux/selinux.h"
