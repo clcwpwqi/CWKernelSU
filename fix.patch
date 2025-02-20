@@ -1,7 +1,7 @@
 diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 --- a/kernel/sucompat.c
 +++ b/kernel/sucompat.c
-@@ -21,271 +21,304 @@
+@@ -21,271 +21,302 @@
  #define SH_PATH "/system/bin/sh"
  
  extern void ksu_escape_to_root();
@@ -22,7 +22,7 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
  static char __user *sh_user_path(void)
  {
 -	static const char sh_path[] = "/system/bin/sh";
-+    static const char sh_path[] = SH_PATH;
++    static const char sh_path[] = "/system/bin/sh";
  
 -	return userspace_stack_buffer(sh_path, sizeof(sh_path));
 +    return userspace_stack_buffer(sh_path, sizeof(sh_path));
@@ -350,7 +350,7 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
  
 -static struct kprobe *init_kprobe(const char *name,
 -				  kprobe_pre_handler_t handler)
-+// 新增 pts_unix98_lookup_pre 函数
++
 +static int pts_unix98_lookup_pre(struct kprobe *p, struct pt_regs *regs)
  {
 -	struct kprobe *kp = kzalloc(sizeof(struct kprobe), GFP_KERNEL);
@@ -365,8 +365,6 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 -		kfree(kp);
 -		return NULL;
 -	}
-+    // 在这里实现 pts_unix98_lookup 的前置处理逻辑
-+    // 如果不需要特殊处理，可以直接返回 0
 +    return 0;
 +}
  
@@ -471,7 +469,6 @@ diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 -
 +#endif // CONFIG_KSU_SUSFS_SUS_SU
 +#endif // CONFIG_KPROBES
-
 
 diff -u a/kernel/ksud.c b/kernel/ksud.c
 --- a/kernel/ksud.c
