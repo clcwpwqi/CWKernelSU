@@ -437,7 +437,6 @@ diff -u a/kernel/apk_sign.c b/kernel/apk_sign.c
 +		check_v2_signature(path, EXPECTED_SIZE_RSUNTK, EXPECTED_HASH_RSUNTK));
 +}
 
-
 diff -u a/kernel/arch.h b/kernel/arch.h
 --- a/kernel/arch.h
 +++ b/kernel/arch.h
