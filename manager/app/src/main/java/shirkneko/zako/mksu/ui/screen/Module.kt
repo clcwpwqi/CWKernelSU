@@ -244,23 +244,22 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
         floatingActionButton = {
             if (!hideInstallButton) {
                 val moduleInstall = stringResource(id = R.string.module_install)
-                //修改点,二次对话框相关方法
                 val selectZipLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartActivityForResult()
-                ) { result ->
-                    if (result.resultCode == RESULT_OK) {
-                        val uri = result.data?.data ?: return@rememberLauncherForActivityResult
-                        val moduleName = ModuleModify.getModuleNameFromUri(context, uri) // 使用 ModuleModify 中的方法
-                        scope.launch {
-                            val userConfirmed = ModuleModify.showInstallConfirmation(context, moduleName)
-                            if (userConfirmed) {
-                                navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
-                                viewModel.markNeedRefresh()
-                            }
-                        }
+                ) {
+                    if (it.resultCode != RESULT_OK) {
+                        return@rememberLauncherForActivityResult
                     }
+                    val data = it.data ?: return@rememberLauncherForActivityResult
+                    val uri = data.data ?: return@rememberLauncherForActivityResult
+
+                    navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
+
+                    viewModel.markNeedRefresh()
+
+                    Log.i("ModuleScreen", "select zip result: ${it.data}")
                 }
-                //修改点,二次对话框相关方法
+
                 ExtendedFloatingActionButton(
                     onClick = {
                         selectZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {

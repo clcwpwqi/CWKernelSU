@@ -147,8 +147,9 @@ fun SettingScreen(navigator: DestinationsNavigator) {
         snackbarHost = { SnackbarHost(snackBarHost) },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { paddingValues ->
-        // region 对话框状态管理
-        val aboutDialog = rememberCustomDialog { AboutDialog(it) }
+        val aboutDialog = rememberCustomDialog {
+            AboutDialog(it)
+        }
         val loadingDialog = rememberLoadingDialog()
         val shrinkDialog = rememberConfirmDialog()
         // endregion
