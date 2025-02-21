@@ -1228,7 +1228,7 @@ diff -u a/kernel/Makefile b/kernel/Makefile
 +else ifeq ($(shell grep -q "atomic_long_inc_not_zero" $(srctree)/kernel/cred.c; echo $$?),0)
 +ATOMIC_INC_FUNC = atomic_long_inc_not_zero
 +else
-+$(info -- KSU_NEXT: Neither atomic_inc_not_zero nor atomic_long_inc_not_zero found in kernel/cred.c)
++$(info -- KSU_SUSFS: Neither atomic_inc_not_zero nor atomic_long_inc_not_zero found in kernel/cred.c)
  endif
  
 -ccflags-y += -DKSU_UMOUNT
@@ -1254,7 +1254,7 @@ diff -u a/kernel/Makefile b/kernel/Makefile
 +$(shell grep -qF "$(GET_CRED_RCU)" $(srctree)/include/linux/cred.h || sed -i '/^static inline void put_cred/i $(GET_CRED_RCU)' $(srctree)/include/linux/cred.h)
 +
 +# Modify get_task_cred in cred.c
-+$(info -- KSU_NEXT: modifying 'get_task_cred' function in $(srctree)/kernel/cred.c)
++$(info -- KSU_SUSFS: modifying 'get_task_cred' function in $(srctree)/kernel/cred.c)
 +$(shell sed -i "s/!$(ATOMIC_INC_FUNC)(&((struct cred \*)cred)->usage)/!get_cred_rcu(cred)/g" $(srctree)/kernel/cred.c)
  endif
  
