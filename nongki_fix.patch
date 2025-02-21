@@ -1065,6 +1065,7 @@ diff -u a/kernel/Makefile b/kernel/Makefile
 -# Keep a new line here!! Because someone may append config+ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat
 +ccflags-y += -Wno-declaration-after-statement -Wno-unused-function
 +# Keep a new line here!! Because someone may append config
+
 diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 --- a/kernel/sucompat.c
 +++ b/kernel/sucompat.c
