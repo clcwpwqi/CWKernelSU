@@ -1059,8 +1059,8 @@ diff -u a/kernel/Makefile b/kernel/Makefile
  
  ifneq ($(shell grep -Eq "^static int can_umount" $(srctree)/fs/namespace.c; echo $$?),0)
 @@ -128,4 +164,6 @@
- $(info -- You have not integrate susfs in your kernel.)
- $(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
+
+
  endif
 -# Keep a new line here!! Because someone may append config+ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat
 +ccflags-y += -Wno-declaration-after-statement -Wno-unused-function
