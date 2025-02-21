@@ -1,4 +1,4 @@
-# MKSU-trilateral
+# MKSU-SKN
 
 A [KernelSU](https://github.com/5ec1cff/KernelSU)-based root solution for Android devices.
 
