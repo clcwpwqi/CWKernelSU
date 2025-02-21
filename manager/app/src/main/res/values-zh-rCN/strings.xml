@@ -141,9 +141,8 @@
     <string name="status_unknown">未知</string>
     <string name="sus_su_mode">SuS SU 模式：</string>
     <!-- Module related -->
+    <string name="module_install_confirm">确认安装模块 %1$s？</string>
     <string name="unknown_module">未知模块</string>
-    <string name="module_install_confirm">安装确认</string>
-    <string name="module_install_confirm_message">是否要安装模块：%1$s？</string>
     <!-- Restore related -->
     <string name="restore_confirm_title">确认还原模块</string>
     <string name="restore_confirm_message">此操作将覆盖所有现有模块，是否继续？</string>

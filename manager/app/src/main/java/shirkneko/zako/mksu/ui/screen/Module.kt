@@ -1,6 +1,6 @@
 package shirkneko.zako.mksu.ui.screen
 
-import android.app.Activity.RESULT_OK
+import android.app.Activity.*
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,19 +24,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Wysiwyg
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.automirrored.outlined.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -73,7 +69,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -100,7 +96,7 @@ import shirkneko.zako.mksu.ui.component.SearchAppBar
 import shirkneko.zako.mksu.ui.component.rememberConfirmDialog
 import shirkneko.zako.mksu.ui.component.rememberLoadingDialog
 import shirkneko.zako.mksu.ui.util.DownloadListener
-import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
+import shirkneko.zako.mksu.ui.util.*
 import shirkneko.zako.mksu.ui.util.download
 import shirkneko.zako.mksu.ui.util.hasMagisk
 import shirkneko.zako.mksu.ui.util.reboot
@@ -111,9 +107,11 @@ import shirkneko.zako.mksu.ui.viewmodel.ModuleViewModel
 import shirkneko.zako.mksu.ui.webui.WebUIActivity
 import okhttp3.OkHttpClient
 import shirkneko.zako.mksu.ui.util.ModuleModify
-import shirkneko.zako.mksu.ui.theme.CardConfig
 import shirkneko.zako.mksu.ui.theme.getCardColors
 import shirkneko.zako.mksu.ui.theme.getCardElevation
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.util.zip.ZipInputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -123,12 +121,62 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     val snackBarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
+    val confirmDialog = rememberConfirmDialog()
 
-    val selectZipLauncher = ModuleModify.rememberModuleInstallLauncher(context, navigator)
+    val selectZipLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode != RESULT_OK) {
+            return@rememberLauncherForActivityResult
+        }
+        val data = it.data ?: return@rememberLauncherForActivityResult
+        val uri = data.data ?: return@rememberLauncherForActivityResult
+
+        scope.launch {
+            // 读取模块名称
+            val moduleName = try {
+                val zipInputStream = ZipInputStream(context.contentResolver.openInputStream(uri))
+                var entry = zipInputStream.nextEntry
+                var name = context.getString(R.string.unknown_module)
+
+                while (entry != null) {
+                    if (entry.name == "module.prop") {
+                        val reader = BufferedReader(InputStreamReader(zipInputStream))
+                        var line: String?
+                        while (reader.readLine().also { line = it } != null) {
+                            if (line?.startsWith("name=") == true) {
+                                name = line?.substringAfter("=") ?: name
+                                break
+                            }
+                        }
+                        break
+                    }
+                    entry = zipInputStream.nextEntry
+                }
+                name
+            } catch (e: Exception) {
+                context.getString(R.string.unknown_module)
+            }
+
+            // 显示确认对话框
+            val confirmResult = confirmDialog.awaitConfirm(
+                title = context.getString(R.string.module_install),
+                content = context.getString(R.string.module_install_confirm, moduleName),
+                confirm = context.getString(R.string.install),
+                dismiss = context.getString(R.string.cancel)
+            )
+
+            if (confirmResult == ConfirmResult.Confirmed) {
+                navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
+                viewModel.markNeedRefresh()
+            }
+        }
+
+        Log.i("ModuleScreen", "select zip result: ${it.data}")
+    }
+
     val backupLauncher = ModuleModify.rememberModuleBackupLauncher(context, snackBarHost)
     val restoreLauncher = ModuleModify.rememberModuleRestoreLauncher(context, snackBarHost)
-
-
 
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
@@ -169,44 +217,36 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                             contentDescription = stringResource(id = R.string.settings)
                         )
 
-                        DropdownMenu(expanded = showDropdown, onDismissRequest = {
-                            showDropdown = false
-                        }) {
-                            DropdownMenuItem(text = {
-                                Text(stringResource(R.string.module_sort_action_first))
-                            }, trailingIcon = {
-                                Checkbox(viewModel.sortActionFirst, null)
-                            }, onClick = {
-                                viewModel.sortActionFirst =
-                                    !viewModel.sortActionFirst
-                                prefs.edit()
-                                    .putBoolean(
-                                        "module_sort_action_first",
-                                        viewModel.sortActionFirst
-                                    )
-                                    .apply()
-                                scope.launch {
-                                    viewModel.fetchModuleList()
+                        DropdownMenu(
+                            expanded = showDropdown,
+                            onDismissRequest = { showDropdown = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.module_sort_action_first)) },
+                                trailingIcon = { Checkbox(viewModel.sortActionFirst, null) },
+                                onClick = {
+                                    viewModel.sortActionFirst = !viewModel.sortActionFirst
+                                    prefs.edit()
+                                        .putBoolean("module_sort_action_first", viewModel.sortActionFirst)
+                                        .apply()
+                                    scope.launch {
+                                        viewModel.fetchModuleList()
+                                    }
                                 }
-                            })
-                            DropdownMenuItem(text = {
-                                Text(stringResource(R.string.module_sort_enabled_first))
-                            }, trailingIcon = {
-                                Checkbox(viewModel.sortEnabledFirst, null)
-                            }, onClick = {
-                                viewModel.sortEnabledFirst =
-                                    !viewModel.sortEnabledFirst
-                                prefs.edit()
-                                    .putBoolean(
-                                        "module_sort_enabled_first",
-                                        viewModel.sortEnabledFirst
-                                    )
-                                    .apply()
-                                scope.launch {
-                                    viewModel.fetchModuleList()
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.module_sort_enabled_first)) },
+                                trailingIcon = { Checkbox(viewModel.sortEnabledFirst, null) },
+                                onClick = {
+                                    viewModel.sortEnabledFirst = !viewModel.sortEnabledFirst
+                                    prefs.edit()
+                                        .putBoolean("module_sort_enabled_first", viewModel.sortEnabledFirst)
+                                        .apply()
+                                    scope.launch {
+                                        viewModel.fetchModuleList()
+                                    }
                                 }
-                            })
-                            // 在 DropdownMenu 中的备份选项
+                            )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.backup_modules)) },
                                 leadingIcon = {
@@ -220,8 +260,6 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                                     backupLauncher.launch(ModuleModify.createBackupIntent())
                                 }
                             )
-
-                            // 在 DropdownMenu 中的还原选项
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.restore_modules)) },
                                 leadingIcon = {
@@ -244,34 +282,29 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
         floatingActionButton = {
             if (!hideInstallButton) {
                 val moduleInstall = stringResource(id = R.string.module_install)
-                val selectZipLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult()
-                ) {
-                    if (it.resultCode != RESULT_OK) {
-                        return@rememberLauncherForActivityResult
-                    }
-                    val data = it.data ?: return@rememberLauncherForActivityResult
-                    val uri = data.data ?: return@rememberLauncherForActivityResult
-
-                    navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
-
-                    viewModel.markNeedRefresh()
-
-                    Log.i("ModuleScreen", "select zip result: ${it.data}")
-                }
-
                 ExtendedFloatingActionButton(
                     onClick = {
-                        selectZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                            type = "application/zip"
-                        })
+                        selectZipLauncher.launch(
+                            Intent(Intent.ACTION_GET_CONTENT).apply {
+                                type = "application/zip"
+                            }
+                        )
                     },
-                    icon = { Icon(Icons.Filled.Add, moduleInstall) },
-                    text = { Text(text = moduleInstall) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = moduleInstall
+                        )
+                    },
+                    text = {
+                        Text(text = moduleInstall)
+                    }
                 )
             }
         },
-        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+        contentWindowInsets = WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Top + WindowInsetsSides.Horizontal
+        ),
         snackbarHost = { SnackbarHost(hostState = snackBarHost) }
     ) { innerPadding ->
         when {
@@ -288,10 +321,9 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                     )
                 }
             }
-
             else -> {
                 ModuleList(
-                    navigator,
+                    navigator = navigator,
                     viewModel = viewModel,
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                     boxModifier = Modifier.padding(innerPadding),

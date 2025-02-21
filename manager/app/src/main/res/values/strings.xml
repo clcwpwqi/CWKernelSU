@@ -143,9 +143,8 @@
     <string name="status_unknown">Unknown</string>
     <string name="sus_su_mode">SuS SU mode:</string>
     <!-- Module related -->
-    <string name="unknown_module">Unknown Module</string>
-    <string name="module_install_confirm">Install Confirmation</string>
-    <string name="module_install_confirm_message">Do you want to install module: %1$s?</string>
+    <string name="module_install_confirm">confirm install module %1$s？</string>
+    <string name="unknown_module">unknown module</string>
     <!-- Restore related -->
     <string name="restore_confirm_title">Confirm Module Restoration</string>
     <string name="restore_confirm_message">This operation will overwrite all existing modules. Continue?</string>
