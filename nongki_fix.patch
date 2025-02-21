@@ -1262,7 +1262,7 @@ diff -u a/kernel/Makefile b/kernel/Makefile
  $(info -- KSU_SUSFS: adding function 'static int can_umount(const struct path *path, int flags);' to $(srctree)/fs/namespace.c)
  CAN_UMOUNT = static int can_umount(const struct path *path, int flags)\n\
  {\n\t\
-@@ -116,16 +151,19 @@
+@@ -116,16 +151,18 @@
  
  ifneq ($(shell grep -Eq "^int path_umount" $(srctree)/fs/internal.h; echo $$?),0)
  $(shell sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' $(srctree)/fs/internal.h;)
@@ -1281,7 +1281,6 @@ diff -u a/kernel/Makefile b/kernel/Makefile
  $(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
  endif
  # Keep a new line here!! Because someone may append config
-+endif
 
 diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 --- a/kernel/sucompat.c
@@ -2017,3 +2016,15 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
 +	flush_scheduled_work(); // Ensure all work is completed
 +#endif
  }
+
+diff -u a/kernel/Makefile b/kernel/Makefile
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -163,6 +163,7 @@
+ $(info -- SUSFS_VERSION: $(SUSFS_VERSION))
+ else
+ $(info -- You have not integrate susfs in your kernel.)
+ $(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
+ endif
+ # Keep a new line here!! Because someone may append config
++endif
