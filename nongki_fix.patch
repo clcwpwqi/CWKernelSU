@@ -1281,7 +1281,7 @@ diff -u a/kernel/Makefile b/kernel/Makefile
  $(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
  endif
  # Keep a new line here!! Because someone may append config
- +endif
++endif
 
 diff -u a/kernel/sucompat.c b/kernel/sucompat.c
 --- a/kernel/sucompat.c
