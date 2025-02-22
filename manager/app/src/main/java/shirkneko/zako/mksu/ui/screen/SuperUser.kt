@@ -1,24 +1,34 @@
 package shirkneko.zako.mksu.ui.screen
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.*
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,6 +55,8 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
     val listState = rememberLazyListState()
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
+
+    var showBatchActions by remember { mutableStateOf(false) }
 
     // 添加备份和还原启动器
     val backupLauncher = ModuleModify.rememberAllowlistBackupLauncher(context, snackBarHostState)
@@ -105,6 +117,33 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
                                 showDropdown = false
                             })
                             DropdownMenuItem(text = {
+                                Text(if (showBatchActions) "退出批量操作" else "批量操作")
+                            }, onClick = {
+                                showBatchActions = !showBatchActions
+                                if (!showBatchActions) {
+                                    viewModel.clearSelection()
+                                }
+                                showDropdown = false
+                            })
+                            if (showBatchActions && viewModel.selectedApps.isNotEmpty()) {
+                                DropdownMenuItem(text = {
+                                    Text("批量授权")
+                                }, onClick = {
+                                    scope.launch {
+                                        viewModel.updateBatchPermissions(true)
+                                    }
+                                    showDropdown = false
+                                })
+                                DropdownMenuItem(text = {
+                                    Text("批量取消授权")
+                                }, onClick = {
+                                    scope.launch {
+                                        viewModel.updateBatchPermissions(false)
+                                    }
+                                    showDropdown = false
+                                })
+                            }
+                            DropdownMenuItem(text = {
                                 Text(stringResource(R.string.backup_allowlist))
                             }, onClick = {
                                 backupLauncher.launch(ModuleModify.createAllowlistBackupIntent())
@@ -139,9 +178,28 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
                 items(viewModel.appList, key = { it.packageName + it.uid }) { app ->
-                    AppItem(app) {
-                        navigator.navigate(AppProfileScreenDestination(app))
-                    }
+                    AppItem(
+                        app = app,
+                        showBatchActions = showBatchActions,
+                        isSelected = viewModel.selectedApps.contains(app.packageName),
+                        onToggleSelection = { viewModel.toggleAppSelection(app.packageName) },
+                        onSwitchChange = { allowSu ->
+                            scope.launch {
+                                val profile = Natives.getAppProfile(app.packageName, app.uid)
+                                val updatedProfile = profile.copy(allowSu = allowSu)
+                                if (Natives.setAppProfile(updatedProfile)) {
+                                    viewModel.fetchAppList()
+                                }
+                            }
+                        },
+                        onClick = {
+                            if (showBatchActions) {
+                                viewModel.toggleAppSelection(app.packageName)
+                            } else {
+                                navigator.navigate(AppProfileScreenDestination(app))
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -152,10 +210,14 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
 @Composable
 private fun AppItem(
     app: SuperUserViewModel.AppInfo,
-    onClickListener: () -> Unit,
+    showBatchActions: Boolean,
+    isSelected: Boolean,
+    onToggleSelection: () -> Unit,
+    onSwitchChange: (Boolean) -> Unit,
+    onClick: () -> Unit,
 ) {
     ListItem(
-        modifier = Modifier.clickable(onClick = onClickListener),
+        modifier = Modifier.clickable(onClick = onClick),
         headlineContent = { Text(app.label) },
         supportingContent = {
             Column {
@@ -175,18 +237,35 @@ private fun AppItem(
             }
         },
         leadingContent = {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(app.packageInfo)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = app.label,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .width(48.dp)
-                    .height(48.dp)
-            )
+            Row {
+                if (showBatchActions) {
+                    Checkbox(
+                        checked = isSelected,
+                        onCheckedChange = { onToggleSelection() },
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(app.packageInfo)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = app.label,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .width(48.dp)
+                        .height(48.dp)
+                )
+            }
         },
+        trailingContent = {
+            if (!showBatchActions) {
+                Switch(
+                    checked = app.allowSu,
+                    onCheckedChange = onSwitchChange
+                )
+            }
+        }
     )
 }
 

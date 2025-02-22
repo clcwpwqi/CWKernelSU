@@ -30,7 +30,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class SuperUserViewModel : ViewModel() {
-
     companion object {
         private const val TAG = "SuperUserViewModel"
         private var apps by mutableStateOf<List<AppInfo>>(emptyList())
@@ -54,7 +53,6 @@ class SuperUserViewModel : ViewModel() {
                 if (profile == null) {
                     return false
                 }
-
                 return if (profile.allowSu) {
                     !profile.rootUseDefault
                 } else {
@@ -66,6 +64,12 @@ class SuperUserViewModel : ViewModel() {
     var search by mutableStateOf("")
     var showSystemApps by mutableStateOf(false)
     var isRefreshing by mutableStateOf(false)
+        private set
+
+    // 批量操作相关状态
+    var showBatchActions by mutableStateOf(false)
+        private set
+    var selectedApps by mutableStateOf<Set<String>>(emptySet())
         private set
 
     private val sortedList by derivedStateOf {
@@ -89,21 +93,64 @@ class SuperUserViewModel : ViewModel() {
             ) || HanziToPinyin.getInstance()
                 .toPinyinString(it.label).contains(search, true)
         }.filter {
-            it.uid == 2000 // Always show shell
-                    || showSystemApps || it.packageInfo.applicationInfo!!.flags.and(ApplicationInfo.FLAG_SYSTEM) == 0
+            it.uid == 2000 || showSystemApps || it.packageInfo.applicationInfo!!.flags.and(ApplicationInfo.FLAG_SYSTEM) == 0
         }
     }
 
-    private suspend inline fun connectKsuService(
-        crossinline onDisconnect: () -> Unit = {}
-    ): Pair<IBinder, ServiceConnection> = suspendCoroutine {
+    // 切换批量操作模式
+    fun toggleBatchMode() {
+        showBatchActions = !showBatchActions
+        if (!showBatchActions) {
+            clearSelection()
+        }
+    }
+
+    // 切换应用选择状态
+    fun toggleAppSelection(packageName: String) {
+        selectedApps = if (selectedApps.contains(packageName)) {
+            selectedApps - packageName
+        } else {
+            selectedApps + packageName
+        }
+    }
+
+    // 清除所有选择
+    fun clearSelection() {
+        selectedApps = emptySet()
+    }
+
+    // 批量更新权限
+    suspend fun updateBatchPermissions(allowSu: Boolean) {
+        selectedApps.forEach { packageName ->
+            val app = apps.find { it.packageName == packageName }
+            app?.let {
+                val profile = Natives.getAppProfile(packageName, it.uid)
+                val updatedProfile = profile.copy(allowSu = allowSu)
+                if (Natives.setAppProfile(updatedProfile)) {
+                    apps = apps.map { app ->
+                        if (app.packageName == packageName) {
+                            app.copy(profile = updatedProfile)
+                        } else {
+                            app
+                        }
+                    }
+                }
+            }
+        }
+        clearSelection()
+        fetchAppList() // 刷新列表以显示最新状态
+    }
+
+    private suspend fun connectKsuService(
+        onDisconnect: () -> Unit = {}
+    ): Pair<IBinder, ServiceConnection> = suspendCoroutine { continuation ->
         val connection = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
                 onDisconnect()
             }
 
             override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-                it.resume(binder as IBinder to this)
+                continuation.resume(binder as IBinder to this)
             }
         }
 
@@ -124,7 +171,6 @@ class SuperUserViewModel : ViewModel() {
     }
 
     suspend fun fetchAppList() {
-
         isRefreshing = true
 
         val result = connectKsuService {
