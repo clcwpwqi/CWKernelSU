@@ -95,8 +95,8 @@ fun checkNewVersion(): LatestVersionInfo {
                     val name = asset.getString("name")
                     if (!name.endsWith(".apk")) continue
 
-                    // 修改正则表达式，只匹配 MKSU-trilateral 和版本号
-                    val regex = Regex("MKSU-trilateral.*_(\\d+)-release")
+                    // 修改正则表达式，只匹配 MKSU-SKN 和版本号
+                    val regex = Regex("MKSU-SKN.*_(\\d+)-release")
                     val matchResult = regex.find(name)
                     if (matchResult == null) {
                         Log.d("CheckUpdate", "No match found in $name, skipping")
