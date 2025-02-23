@@ -11,6 +11,7 @@ A [KernelSU](https://github.com/5ec1cff/KernelSU)-based root solution for Androi
 3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
 4. Add susfs display
 5. More customization
+6. More suitable for Chinese people to use the habit of interface and functionality
 
 ## License
 
