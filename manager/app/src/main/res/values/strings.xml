@@ -182,4 +182,7 @@
     <string name="settings_disable_su">Disable su compatibility</string>
     <string name="settings_disable_su_summary">Temporarily disable any applications from obtaining root privileges via the ⁠su command (existing root processes will not be affected).</string>
     <string name="using_mksu_manager">你正在使用的是MKSU第三方管理器</string>
+    <string name="module_install_multiple_confirm">确定要安装选择的 %d 个模块吗？</string>
+    <string name="module_install_multiple_confirm_with_names">确定要安装以下 %1$d 个模块吗？\n\n%2$s</string>
+    <string name="module_installing_progress">正在安装 %1$s (%2$d/%3$d)</string>
 </resources>

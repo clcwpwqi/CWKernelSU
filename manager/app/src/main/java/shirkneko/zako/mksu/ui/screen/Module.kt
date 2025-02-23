@@ -103,12 +103,12 @@ import shirkneko.zako.mksu.ui.util.reboot
 import shirkneko.zako.mksu.ui.util.restoreModule
 import shirkneko.zako.mksu.ui.util.toggleModule
 import shirkneko.zako.mksu.ui.util.uninstallModule
-import shirkneko.zako.mksu.ui.viewmodel.ModuleViewModel
 import shirkneko.zako.mksu.ui.webui.WebUIActivity
 import okhttp3.OkHttpClient
 import shirkneko.zako.mksu.ui.util.ModuleModify
 import shirkneko.zako.mksu.ui.theme.getCardColors
 import shirkneko.zako.mksu.ui.theme.getCardElevation
+import shirkneko.zako.mksu.ui.viewmodel.ModuleViewModel
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.zip.ZipInputStream
@@ -130,49 +130,107 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
             return@rememberLauncherForActivityResult
         }
         val data = it.data ?: return@rememberLauncherForActivityResult
-        val uri = data.data ?: return@rememberLauncherForActivityResult
 
         scope.launch {
-            // 读取模块名称
-            val moduleName = try {
-                val zipInputStream = ZipInputStream(context.contentResolver.openInputStream(uri))
-                var entry = zipInputStream.nextEntry
-                var name = context.getString(R.string.unknown_module)
+            val clipData = data.clipData
+            if (clipData != null) {
+                // 处理多选结果
+                val selectedModules = mutableSetOf<Uri>()
+                val selectedModuleNames = mutableMapOf<Uri, String>()
 
-                while (entry != null) {
-                    if (entry.name == "module.prop") {
-                        val reader = BufferedReader(InputStreamReader(zipInputStream))
-                        var line: String?
-                        while (reader.readLine().also { line = it } != null) {
-                            if (line?.startsWith("name=") == true) {
-                                name = line?.substringAfter("=") ?: name
+                suspend fun processUri(uri: Uri) {
+                    val moduleName = withContext(Dispatchers.IO) {
+                        try {
+                            val zipInputStream = ZipInputStream(context.contentResolver.openInputStream(uri))
+                            var entry = zipInputStream.nextEntry
+                            var name = context.getString(R.string.unknown_module)
+
+                            while (entry != null) {
+                                if (entry.name == "module.prop") {
+                                    val reader = BufferedReader(InputStreamReader(zipInputStream))
+                                    var line: String?
+                                    while (reader.readLine().also { line = it } != null) {
+                                        if (line?.startsWith("name=") == true) {
+                                            name = line?.substringAfter("=") ?: name
+                                            break
+                                        }
+                                    }
+                                    break
+                                }
+                                entry = zipInputStream.nextEntry
+                            }
+                            name
+                        } catch (e: Exception) {
+                            context.getString(R.string.unknown_module)
+                        }
+                    }
+                    selectedModules.add(uri)
+                    selectedModuleNames[uri] = moduleName
+                }
+
+                for (i in 0 until clipData.itemCount) {
+                    val uri = clipData.getItemAt(i).uri
+                    processUri(uri)
+                }
+
+                // 显示确认对话框
+                val modulesList = selectedModuleNames.values.joinToString("\n• ", "• ")
+                val confirmResult = confirmDialog.awaitConfirm(
+                    title = context.getString(R.string.module_install),
+                    content = context.getString(R.string.module_install_multiple_confirm_with_names, selectedModules.size, modulesList),
+                    confirm = context.getString(R.string.install),
+                    dismiss = context.getString(R.string.cancel)
+                )
+
+                if (confirmResult == ConfirmResult.Confirmed) {
+                    // 批量安装模块
+                    selectedModules.forEach { uri ->
+                        navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
+                    }
+                    viewModel.markNeedRefresh()
+                }
+            } else {
+                // 单个文件安装逻辑
+                val uri = data.data ?: return@launch
+                val moduleName = withContext(Dispatchers.IO) {
+                    try {
+                        val zipInputStream = ZipInputStream(context.contentResolver.openInputStream(uri))
+                        var entry = zipInputStream.nextEntry
+                        var name = context.getString(R.string.unknown_module)
+
+                        while (entry != null) {
+                            if (entry.name == "module.prop") {
+                                val reader = BufferedReader(InputStreamReader(zipInputStream))
+                                var line: String?
+                                while (reader.readLine().also { line = it } != null) {
+                                    if (line?.startsWith("name=") == true) {
+                                        name = line?.substringAfter("=") ?: name
+                                        break
+                                    }
+                                }
                                 break
                             }
+                            entry = zipInputStream.nextEntry
                         }
-                        break
+                        name
+                    } catch (e: Exception) {
+                        context.getString(R.string.unknown_module)
                     }
-                    entry = zipInputStream.nextEntry
                 }
-                name
-            } catch (e: Exception) {
-                context.getString(R.string.unknown_module)
-            }
 
-            // 显示确认对话框
-            val confirmResult = confirmDialog.awaitConfirm(
-                title = context.getString(R.string.module_install),
-                content = context.getString(R.string.module_install_confirm, moduleName),
-                confirm = context.getString(R.string.install),
-                dismiss = context.getString(R.string.cancel)
-            )
+                val confirmResult = confirmDialog.awaitConfirm(
+                    title = context.getString(R.string.module_install),
+                    content = context.getString(R.string.module_install_confirm, moduleName),
+                    confirm = context.getString(R.string.install),
+                    dismiss = context.getString(R.string.cancel)
+                )
 
-            if (confirmResult == ConfirmResult.Confirmed) {
-                navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
-                viewModel.markNeedRefresh()
+                if (confirmResult == ConfirmResult.Confirmed) {
+                    navigator.navigate(FlashScreenDestination(FlashIt.FlashModule(uri)))
+                    viewModel.markNeedRefresh()
+                }
             }
         }
-
-        Log.i("ModuleScreen", "select zip result: ${it.data}")
     }
 
     val backupLauncher = ModuleModify.rememberModuleBackupLauncher(context, snackBarHost)
@@ -287,6 +345,7 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                         selectZipLauncher.launch(
                             Intent(Intent.ACTION_GET_CONTENT).apply {
                                 type = "application/zip"
+                                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                             }
                         )
                     },
@@ -296,9 +355,7 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                             contentDescription = moduleInstall
                         )
                     },
-                    text = {
-                        Text(text = moduleInstall)
-                    }
+                    text = { Text(text = moduleInstall) }
                 )
             }
         },
@@ -661,7 +718,7 @@ fun ModuleItem(
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
                         lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                         fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                        textDecoration = textDecoration
+                    textDecoration = textDecoration
                     )
                 }
 
@@ -836,3 +893,4 @@ fun ModuleItemPreview() {
     )
     ModuleItem(EmptyDestinationsNavigator, module, "", {}, {}, {}, {})
 }
+

@@ -3,38 +3,17 @@ package shirkneko.zako.mksu.ui.screen
 import android.net.Uri
 import android.os.Environment
 import android.os.Parcelable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
@@ -53,17 +32,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import shirkneko.zako.mksu.R
 import shirkneko.zako.mksu.ui.component.KeyEventBlocker
-import shirkneko.zako.mksu.ui.util.LkmSelection
-import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
-import shirkneko.zako.mksu.ui.util.flashModule
-import shirkneko.zako.mksu.ui.util.installBoot
-import shirkneko.zako.mksu.ui.util.reboot
-import shirkneko.zako.mksu.ui.util.restoreBoot
-import shirkneko.zako.mksu.ui.util.uninstallPermanently
+import shirkneko.zako.mksu.ui.util.*
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 enum class FlashingStatus {
     FLASHING,
@@ -71,17 +43,22 @@ enum class FlashingStatus {
     FAILED
 }
 
-/**
- * @author weishu
- * @date 2023/1/1.
- */
+private var currentFlashingStatus = mutableStateOf(FlashingStatus.FLASHING)
+
+fun getFlashingStatus(): FlashingStatus {
+    return currentFlashingStatus.value
+}
+
+fun setFlashingStatus(status: FlashingStatus) {
+    currentFlashingStatus.value = status
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination<RootGraph>
 fun FlashScreen(navigator: DestinationsNavigator, flashIt: FlashIt) {
-
     var text by rememberSaveable { mutableStateOf("") }
-    var tempText : String
+    var tempText: String
     val logContent = rememberSaveable { StringBuilder() }
     var showFloatAction by rememberSaveable { mutableStateOf(false) }
 
@@ -89,27 +66,27 @@ fun FlashScreen(navigator: DestinationsNavigator, flashIt: FlashIt) {
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    var flashing by rememberSaveable {
-        mutableStateOf(FlashingStatus.FLASHING)
-    }
 
     LaunchedEffect(Unit) {
         if (text.isNotEmpty()) {
             return@LaunchedEffect
         }
         withContext(Dispatchers.IO) {
+            setFlashingStatus(FlashingStatus.FLASHING)
             flashIt(flashIt, onFinish = { showReboot, code ->
                 if (code != 0) {
                     text += "Error: exit code = $code.\nPlease save and check the log.\n"
+                    setFlashingStatus(FlashingStatus.FAILED)
+                } else {
+                    setFlashingStatus(FlashingStatus.SUCCESS)
                 }
                 if (showReboot) {
                     text += "\n\n\n"
                     showFloatAction = true
                 }
-                flashing = if (code == 0) FlashingStatus.SUCCESS else FlashingStatus.FAILED
             }, onStdout = {
                 tempText = "$it\n"
-                if (tempText.startsWith("[H[J")) { // clear command
+                if (tempText.startsWith("[H[J")) { // clear command
                     text = tempText.substring(6)
                 } else {
                     text += tempText
@@ -124,7 +101,7 @@ fun FlashScreen(navigator: DestinationsNavigator, flashIt: FlashIt) {
     Scaffold(
         topBar = {
             TopBar(
-                flashing,
+                currentFlashingStatus.value,
                 onBack = {
                     navigator.popBackStack()
                 },
@@ -188,18 +165,15 @@ fun FlashScreen(navigator: DestinationsNavigator, flashIt: FlashIt) {
 
 @Parcelize
 sealed class FlashIt : Parcelable {
-    data class FlashBoot(val boot: Uri? = null, val lkm: LkmSelection, val ota: Boolean) :
-        FlashIt()
-
+    data class FlashBoot(val boot: Uri? = null, val lkm: LkmSelection, val ota: Boolean) : FlashIt()
     data class FlashModule(val uri: Uri) : FlashIt()
-
     data object FlashRestore : FlashIt()
-
     data object FlashUninstall : FlashIt()
 }
 
 fun flashIt(
-    flashIt: FlashIt, onFinish: (Boolean, Int) -> Unit,
+    flashIt: FlashIt,
+    onFinish: (Boolean, Int) -> Unit,
     onStdout: (String) -> Unit,
     onStderr: (String) -> Unit
 ) {
@@ -212,11 +186,8 @@ fun flashIt(
             onStdout,
             onStderr
         )
-
         is FlashIt.FlashModule -> flashModule(flashIt.uri, onFinish, onStdout, onStderr)
-
         FlashIt.FlashRestore -> restoreBoot(onFinish, onStdout, onStderr)
-
         FlashIt.FlashUninstall -> uninstallPermanently(onFinish, onStdout, onStderr)
     }
 }
@@ -261,6 +232,6 @@ private fun TopBar(
 
 @Preview
 @Composable
-fun InstallPreview() {
-    InstallScreen(EmptyDestinationsNavigator)
+fun FlashScreenPreview() {
+    FlashScreen(EmptyDestinationsNavigator, FlashIt.FlashUninstall)
 }
