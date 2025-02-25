@@ -63,36 +63,7 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
         mutableStateOf(Shell.cmd("getenforce").exec().out.firstOrNull() == "Enforcing")
     }
 
-    // region SUSFS 配置（仅在支持时显示）
-    val suSFS = getSuSFS()
-    val isSUS_SU = getSuSFSFeatures()
-    if (suSFS == "Supported") {
-        if (isSUS_SU == "CONFIG_KSU_SUSFS_SUS_SU") {
-            var isEnabled by rememberSaveable {
-                mutableStateOf(susfsSUS_SU_Mode() == "2")
-            }
 
-            LaunchedEffect(Unit) {
-                isEnabled = susfsSUS_SU_Mode() == "2"
-            }
-
-            SwitchItem(
-                icon = Icons.Filled.VisibilityOff,
-                title = stringResource(id = R.string.settings_susfs_toggle),
-                summary = stringResource(id = R.string.settings_susfs_toggle_summary),
-                checked = isEnabled
-            ) {
-                if (it) {
-                    susfsSUS_SU_2()
-                } else {
-                    susfsSUS_SU_0()
-                }
-                prefs.edit().putBoolean("enable_sus_su", it).apply()
-                isEnabled = it
-            }
-        }
-    }
-    // endregion
 
     // 卡片配置状态
     var cardAlpha by rememberSaveable { mutableStateOf(CardConfig.cardAlpha) }
@@ -124,7 +95,7 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("更多设置") },
+                title = { Text(stringResource(R.string.more_settings)) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
@@ -138,12 +109,15 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
             modifier = Modifier
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
+                .padding(top = 12.dp)
         ) {
             // SELinux 开关
             SwitchItem(
                 icon = Icons.Filled.Security,
-                title = "SELinux",
-                summary = if (selinuxEnabled) "已启用" else "已禁用",
+                title = stringResource(R.string.selinux),
+                summary = if (selinuxEnabled)
+                    stringResource(R.string.selinux_enabled) else
+                    stringResource(R.string.selinux_disabled),
                 checked = selinuxEnabled
             ) { enabled ->
                 val command = if (enabled) "setenforce 1" else "setenforce 0"
@@ -151,6 +125,37 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                     if (result.isSuccess) selinuxEnabled = enabled
                 }
             }
+
+            // region SUSFS 配置（仅在支持时显示）
+            val suSFS = getSuSFS()
+            val isSUS_SU = getSuSFSFeatures()
+            if (suSFS == "Supported") {
+                if (isSUS_SU == "CONFIG_KSU_SUSFS_SUS_SU") {
+                    var isEnabled by rememberSaveable {
+                        mutableStateOf(susfsSUS_SU_Mode() == "2")
+                    }
+
+                    LaunchedEffect(Unit) {
+                        isEnabled = susfsSUS_SU_Mode() == "2"
+                    }
+
+                    SwitchItem(
+                        icon = Icons.Filled.VisibilityOff,
+                        title = stringResource(id = R.string.settings_susfs_toggle),
+                        summary = stringResource(id = R.string.settings_susfs_toggle_summary),
+                        checked = isEnabled
+                    ) {
+                        if (it) {
+                            susfsSUS_SU_2()
+                        } else {
+                            susfsSUS_SU_0()
+                        }
+                        prefs.edit().putBoolean("enable_sus_su", it).apply()
+                        isEnabled = it
+                    }
+                }
+            }
+            // endregion
 
             // 自定义背景开关
             SwitchItem(
@@ -173,16 +178,16 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
             // 卡片管理展开控制
             if (ThemeConfig.customBackgroundUri != null) {
                 ListItem(
-                    leadingContent = { Icon(Icons.Default.ExpandMore, "卡片管理") },
-                    headlineContent = { Text("卡片管理") },
+                    leadingContent = { Icon(Icons.Default.ExpandMore, null) },
+                    headlineContent = { Text(stringResource(R.string.settings_card_manage)) },
                     modifier = Modifier.clickable { showCardSettings = !showCardSettings }
                 )
 
                 if (showCardSettings) {
                     // 透明度 Slider
                     ListItem(
-                        leadingContent = { Icon(Icons.Filled.Opacity, "透明度") },
-                        headlineContent = { Text("卡片透明度") },
+                        leadingContent = { Icon(Icons.Filled.Opacity, null) },
+                        headlineContent = { Text(stringResource(R.string.settings_card_alpha)) },
                         supportingContent = {
                             Slider(
                                 value = cardAlpha,

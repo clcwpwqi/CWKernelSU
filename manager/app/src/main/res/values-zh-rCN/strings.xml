@@ -183,4 +183,7 @@
     <string name="module_install_multiple_confirm">确定要安装选择的 %d 个模块吗？</string>
     <string name="module_install_multiple_confirm_with_names">确定要安装以下 %1$d 个模块吗？\n\n%2$s</string>
     <string name="more_settings">更多设置</string>
+    <string name="selinux">SELinux</string>
+    <string name="selinux_enabled">强制执行</string>
+    <string name="selinux_disabled">兼容模式</string>
 </resources>
