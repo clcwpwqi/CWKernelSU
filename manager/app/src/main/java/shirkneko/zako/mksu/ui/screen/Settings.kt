@@ -74,6 +74,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AppProfileTemplateScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.FlashScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.MoreSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.Dispatchers
@@ -91,35 +92,9 @@ import shirkneko.zako.mksu.ui.component.rememberCustomDialog
 import shirkneko.zako.mksu.ui.component.rememberLoadingDialog
 import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
 import shirkneko.zako.mksu.ui.util.getBugreportFile
-import shirkneko.zako.mksu.ui.util.getSuSFS
-import shirkneko.zako.mksu.ui.util.getSuSFSFeatures
-import shirkneko.zako.mksu.ui.util.susfsSUS_SU_0
-import shirkneko.zako.mksu.ui.util.susfsSUS_SU_2
-import shirkneko.zako.mksu.ui.util.susfsSUS_SU_Mode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Wallpaper
-import shirkneko.zako.mksu.ui.theme.ThemeConfig
-import shirkneko.zako.mksu.ui.theme.saveCustomBackground
-import androidx.compose.material3.Slider
-import androidx.compose.material.icons.filled.Opacity
-import androidx.compose.material3.SliderColors
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.ui.graphics.Color
-import shirkneko.zako.mksu.ui.theme.CardConfig
-import androidx.compose.ui.unit.DpSize
-import kotlinx.coroutines.CoroutineScope
-
-
-fun saveCardConfig(context: Context) {
-    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-    with(prefs.edit()) {
-        putFloat("card_alpha", CardConfig.cardAlpha)
-        putBoolean("custom_background_enabled", CardConfig.cardElevation == 0.dp)
-        apply()
-    }
-}
 
 
 /**
@@ -227,173 +202,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
 
             val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
-            // 初始化时从 SharedPreferences 加载配置到 CardConfig
-            LaunchedEffect(Unit) {
-                CardConfig.apply {
-                    cardAlpha = prefs.getFloat("card_alpha", 0.85f)
-                    cardElevation = if (prefs.getBoolean("custom_background_enabled", false)) 0.dp else defaultElevation
-                }
-            }
-
-
-            var cardAlpha by rememberSaveable {
-                mutableStateOf(CardConfig.cardAlpha)
-            }
-
-            LaunchedEffect(CardConfig.cardAlpha) {
-                cardAlpha = CardConfig.cardAlpha
-            }
-
-            // 从 SharedPreferences 中读取卡片阴影
-            var cardElevation by remember {
-                val enabled = prefs.getBoolean("custom_background_enabled", false)
-                mutableStateOf(if (enabled) 0.dp else CardConfig.defaultElevation)
-            }
-            // region SUSFS 配置（仅在支持时显示）
-            val suSFS = getSuSFS()
-            val isSUS_SU = getSuSFSFeatures()
-            if (suSFS == "Supported") {
-                if (isSUS_SU == "CONFIG_KSU_SUSFS_SUS_SU") {
-                    var isEnabled by rememberSaveable {
-                        mutableStateOf(susfsSUS_SU_Mode() == "2")
-                    }
-
-                    LaunchedEffect(Unit) {
-                        isEnabled = susfsSUS_SU_Mode() == "2"
-                    }
-
-                    SwitchItem(
-                        icon = Icons.Filled.VisibilityOff,
-                        title = stringResource(id = R.string.settings_susfs_toggle),
-                        summary = stringResource(id = R.string.settings_susfs_toggle_summary),
-                        checked = isEnabled
-                    ) {
-                        if (it) {
-                            susfsSUS_SU_2()
-                        } else {
-                            susfsSUS_SU_0()
-                        }
-                        prefs.edit().putBoolean("enable_sus_su", it).apply()
-                        isEnabled = it
-                    }
-                }
-            }
-            // endregion
-
-            // region 自定义背景设置
-            var isCustomBackgroundEnabled by rememberSaveable { mutableStateOf(ThemeConfig.customBackgroundUri != null) }
-
-            // 图片选择器定义
-            val pickImageLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.GetContent()
-            ) { uri: Uri? ->
-                uri?.let {
-                    context.saveCustomBackground(it)
-                    // 选择图片成功后，更新开关状态为开启
-                    isCustomBackgroundEnabled = true
-                }
-            }
-
-            SwitchItem(
-                icon = Icons.Filled.Wallpaper,
-                title = stringResource(id = R.string.settings_custom_background),
-                summary = stringResource(id = R.string.settings_custom_background_summary),
-                checked = isCustomBackgroundEnabled
-            ) { isChecked ->
-                if (isChecked) {
-                    pickImageLauncher.launch("image/*")
-                } else {
-                    context.saveCustomBackground(null)
-                    isCustomBackgroundEnabled = false
-
-                    // 关闭时恢复默认值
-                    CardConfig.cardElevation = CardConfig.defaultElevation
-                    CardConfig.cardAlpha = 1f
-                }
-                if (isChecked) {
-                    CardConfig.cardElevation = 0.dp
-                }
-                CardConfig.save(context)
-            }
-            // endregion
-
-            // region 卡片设置展开控制
-            var showCardSettings by remember { mutableStateOf(false) }
-
-            // 当自定义背景启用时显示卡片设置
-            if (ThemeConfig.customBackgroundUri != null) {
-                ListItem(
-                    leadingContent = {
-                        Icon(
-                            Icons.Filled.ExpandMore,
-                            stringResource(id = R.string.settings_card_manage)
-                        )
-                    },
-                    headlineContent = {
-                        Text(stringResource(id = R.string.settings_card_manage))
-                    },
-                    modifier = Modifier.clickable {
-                        showCardSettings = !showCardSettings
-                    }
-                )
-
-                if (showCardSettings) {
-                    // 卡片透明度设置
-                    ListItem(
-                        leadingContent = {
-                            Icon(
-                                Icons.Filled.Opacity,
-                                stringResource(id = R.string.settings_card_alpha)
-                            )
-                        },
-                        headlineContent = {
-                            Text(stringResource(id = R.string.settings_card_alpha))
-                        },
-                        supportingContent = {
-                            Slider(
-                                value = cardAlpha,
-                                onValueChange = { newValue ->
-                                    // 同时更新本地状态和配置对象
-                                    cardAlpha = newValue
-                                    CardConfig.cardAlpha = newValue
-                                    // 立即保存到SharedPreferences（主线程安全操作）
-                                    prefs.edit().putFloat("card_alpha", newValue).apply()
-                                },
-                                onValueChangeFinished = {
-                                    // 异步保存完整配置
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        saveCardConfig(context)
-                                    }
-                                },
-                                valueRange = 0f..1f,
-                                thumb = {
-                                    SliderDefaults.Thumb(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        thumbSize = DpSize(0.dp, 0.dp)
-                                    )
-                                },
-                                colors = getSliderColors(cardAlpha)
-                            )
-                        }
-
-                    )
-
-                    // 阴影设置说明注释
-                    /*
-                    当启用自定义背景时：
-                    1. 强制设置阴影为0.dp
-                    2. 立即保存配置
-                    */
-                    if (ThemeConfig.customBackgroundUri != null) {
-                        CardConfig.cardElevation = 0.dp
-                    } else {
-                        // 未启用自定义背景时恢复默认阴影
-                        CardConfig.cardElevation = CardConfig.defaultElevation
-                    }
-                    CardConfig.save(context) // 修改保存调用
-                }
-            }// endregion
-
             // 更新检查开关
             var checkUpdate by rememberSaveable {
                 mutableStateOf(
@@ -426,6 +234,20 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                 enableWebDebugging = it
             }
             // endregion
+            val newButtonTitle = stringResource(id = R.string.more_settings)
+            ListItem(
+                leadingContent = {
+                    Icon(
+                        Icons.Filled.ExpandMore,
+                        contentDescription = newButtonTitle
+                    )
+                },
+                headlineContent = { Text(newButtonTitle) },
+                supportingContent = { Text(stringResource(id = R.string.more_settings)) },
+                modifier = Modifier.clickable {
+                    navigator.navigate(MoreSettingsScreenDestination)
+                }
+            )
 
             var showBottomsheet by remember { mutableStateOf(false) }
 
@@ -688,13 +510,4 @@ private fun SettingsPreview() {
     SettingScreen(EmptyDestinationsNavigator)
 }
 
-@Composable
-fun getSliderColors(value: Float): SliderColors {
-    val activeColor = Color.Magenta.copy(alpha = value)
-    val inactiveColor = Color.Gray.copy(alpha = 1 - value)
-    return SliderDefaults.colors(
-        activeTrackColor = activeColor,
-        inactiveTrackColor = inactiveColor
-    )
-}
 
