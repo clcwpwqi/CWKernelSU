@@ -138,6 +138,7 @@ class SuperUserViewModel : ViewModel() {
             }
         }
         clearSelection()
+        showBatchActions = false // 批量操作完成后退出批量模式
         fetchAppList() // 刷新列表以显示最新状态
     }
 
