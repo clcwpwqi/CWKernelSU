@@ -312,26 +312,3 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  {
  	static bool input_hook_stopped = false;
  	if (input_hook_stopped) {
-
-
-diff -u a/kernel/ksud.h b/kernel/ksud.h
---- a/kernel/ksud.h
-+++ b/kernel/ksud.h
-@@ -1,14 +1,17 @@
- #ifndef __KSU_H_KSUD
- #define __KSU_H_KSUD
- 
- #include <linux/types.h>
-+extern bool ksu_vfs_read_hook;
-+extern bool ksu_execveat_hook;
-+extern bool ksu_input_hook;
- 
- #define KSUD_PATH "/data/adb/ksud"
- 
- void ksu_on_post_fs_data(void);
- 
- bool ksu_is_safe_mode(void);
- 
- extern u32 ksu_devpts_sid;
- 
- #endif
