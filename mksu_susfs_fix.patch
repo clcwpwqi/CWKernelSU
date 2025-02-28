@@ -313,36 +313,6 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	static bool input_hook_stopped = false;
  	if (input_hook_stopped) {
 
-diff -u a/kernel/ksud.c b/kernel/ksud.c
---- a/kernel/ksud.c
-+++ b/kernel/ksud.c
-@@ -16,12 +16,15 @@
- #include "allowlist.h"
- #include "arch.h"
- #include "klog.h" // IWYU pragma: keep
- #include "ksud.h"
- #include "kernel_compat.h"
- #include "selinux/selinux.h"
-+bool ksu_vfs_read_hook = true;
-+bool ksu_execveat_hook = true;
-+bool ksu_input_hook = true;
- 
- static const char KERNEL_SU_RC[] =
- 	"\n"
- 
- 	"on post-fs-data\n"
- 	"    start logd\n"
-@@ -567,6 +570,10 @@
- {
- 	unregister_kprobe(&execve_kp);
- 	// this should be done before unregister vfs_read_kp
- 	// unregister_kprobe(&vfs_read_kp);
- 	unregister_kprobe(&input_event_kp);
- }
-+
-+EXPORT_SYMBOL(ksu_vfs_read_hook);
-+EXPORT_SYMBOL(ksu_execveat_hook);
-+EXPORT_SYMBOL(ksu_input_hook);
 
 diff -u a/kernel/ksud.h b/kernel/ksud.h
 --- a/kernel/ksud.h
