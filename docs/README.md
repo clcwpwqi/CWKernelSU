@@ -10,9 +10,8 @@ A [KernelSU](https://github.com/5ec1cff/KernelSU)-based root solution for Androi
 1. Kernel-based `su` and root access management.
 2. Module system not based on [OverlayFS](https://en.wikipedia.org/wiki/OverlayFS).
 3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
-4. Add susfs display
-5. More customization
-6. More user-friendly interface and functionality
+4. More customization
+5. More user-friendly interface and functionality
 
 ## License
 
