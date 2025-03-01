@@ -1,18 +1,22 @@
-use anyhow::{Result, bail};
+use anyhow::{bail, Result};
 use derive_new::new;
 use nom::{
-    AsChar, IResult, Parser,
     branch::alt,
-    bytes::complete::{tag, take_while, take_while_m_n, take_while1},
-    character::complete::{space0, space1},
+    bytes::complete::{tag, take_while, take_while1, take_while_m_n},
+    character::{
+        complete::{space0, space1},
+        is_alphanumeric,
+    },
     combinator::map,
+    sequence::Tuple,
+    IResult, Parser,
 };
 use std::{ffi, path::Path, vec};
 
 type SeObject<'a> = Vec<&'a str>;
 
 fn is_sepolicy_char(c: char) -> bool {
-    c.is_alphanum() || c == '_' || c == '-'
+    is_alphanumeric(c as u8) || c == '_' || c == '-'
 }
 
 fn parse_single_word(input: &str) -> IResult<&str, &str> {
@@ -169,8 +173,7 @@ impl<'a> SeObjectParser<'a> for NormalPerm<'a> {
             tag("deny"),
             tag("auditallow"),
             tag("dontaudit"),
-        ))
-        .parse(input)?;
+        ))(input)?;
 
         let (input, _) = space0(input)?;
         let (input, source) = parse_seobj(input)?;
@@ -190,8 +193,7 @@ impl<'a> SeObjectParser<'a> for XPerm<'a> {
             tag("allowxperm"),
             tag("auditallowxperm"),
             tag("dontauditxperm"),
-        ))
-        .parse(input)?;
+        ))(input)?;
 
         let (input, _) = space0(input)?;
         let (input, source) = parse_seobj(input)?;
@@ -213,7 +215,7 @@ impl<'a> SeObjectParser<'a> for XPerm<'a> {
 
 impl<'a> SeObjectParser<'a> for TypeState<'a> {
     fn parse(input: &'a str) -> IResult<&'a str, Self> {
-        let (input, op) = alt((tag("permissive"), tag("enforce"))).parse(input)?;
+        let (input, op) = alt((tag("permissive"), tag("enforce")))(input)?;
 
         let (input, _) = space1(input)?;
         let (input, stype) = parse_seobj_no_star(input)?;
@@ -241,7 +243,7 @@ impl<'a> SeObjectParser<'a> for Type<'a> {
 
 impl<'a> SeObjectParser<'a> for TypeAttr<'a> {
     fn parse(input: &'a str) -> IResult<&'a str, Self> {
-        let (input, _) = alt((tag("typeattribute"), tag("attradd"))).parse(input)?;
+        let (input, _) = alt((tag("typeattribute"), tag("attradd")))(input)?;
         let (input, _) = space1(input)?;
         let (input, stype) = parse_seobj_no_star(input)?;
         let (input, _) = space1(input)?;
@@ -263,7 +265,7 @@ impl<'a> SeObjectParser<'a> for Attr<'a> {
 
 impl<'a> SeObjectParser<'a> for TypeTransition<'a> {
     fn parse(input: &'a str) -> IResult<&'a str, Self> {
-        let (input, _) = alt((tag("type_transition"), tag("name_transition"))).parse(input)?;
+        let (input, _) = alt((tag("type_transition"), tag("name_transition")))(input)?;
         let (input, _) = space1(input)?;
         let (input, source) = parse_single_word(input)?;
         let (input, _) = space1(input)?;
@@ -292,7 +294,7 @@ impl<'a> SeObjectParser<'a> for TypeTransition<'a> {
 
 impl<'a> SeObjectParser<'a> for TypeChange<'a> {
     fn parse(input: &'a str) -> IResult<&'a str, Self> {
-        let (input, op) = alt((tag("type_change"), tag("type_member"))).parse(input)?;
+        let (input, op) = alt((tag("type_change"), tag("type_member")))(input)?;
         let (input, _) = space1(input)?;
         let (input, source) = parse_single_word(input)?;
         let (input, _) = space1(input)?;
@@ -335,8 +337,7 @@ impl<'a> PolicyStatement<'a> {
             map(TypeTransition::parse, PolicyStatement::TypeTransition),
             map(TypeChange::parse, PolicyStatement::TypeChange),
             map(GenFsCon::parse, PolicyStatement::GenFsCon),
-        ))
-        .parse(input)?;
+        ))(input)?;
         let (input, _) = space0(input)?;
         let (input, _) = take_while(|c| c == ';')(input)?;
         let (input, _) = space0(input)?;
