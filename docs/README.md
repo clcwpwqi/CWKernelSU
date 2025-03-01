@@ -1,5 +1,5 @@
 # MKSU-SKN
-[english](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README.md) [简体中文](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README-zh.md)
+[english](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README-en.md) [简体中文](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README.md)
 
 A [KernelSU](https://github.com/5ec1cff/KernelSU)-based root solution for Android devices.
 
