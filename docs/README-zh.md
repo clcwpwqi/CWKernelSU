@@ -10,9 +10,8 @@
 1. 基于内核的 `su` 和 root 访问管理。
 2. 非基于 [OverlayFS](https://en.wikipedia.org/wiki/OverlayFS) 的模块系统。
 3. [应用程序配置文件](https://kernelsu.org/guide/app-profile.html)： 将 root 权限锁在笼子里。
-4. 添加 susfs 显示
-5. 更多自定义功能
-6. 更适合使用习惯的界面和功能
+4. 更多自定义功能
+5. 更适合使用习惯的界面和功能
 
 ## 许可证
 
