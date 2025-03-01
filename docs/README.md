@@ -18,11 +18,11 @@ curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/susfs/kernel/set
 
 
 ## 如何使用 
-GKI2.0直接patch mksu_susfs_fix.patch补丁
+- GKI2.0直接patch mksu_susfs_fix.patch补丁
 
-非GKI设备还需要patch nongki_fix.patch和运行fix_nongki.sh
+- 非GKI设备还需要patch nongki_fix.patch和运行fix_nongki.sh
 
-对于vfs修补还需要运行 mksu_susfs_vfs_fix.sh
+- 对于vfs修补还需要运行 mksu_susfs_vfs_fix.sh
 
 
 ## 更多链接
@@ -39,6 +39,8 @@ GKI2.0直接patch mksu_susfs_fix.patch补丁
 4. 更多自定义功能
 5. 更适合使用习惯的界面和功能
 
+
+
 ## 许可证
 
 - kernel "目录下的文件是[GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)。
@@ -48,7 +50,7 @@ GKI2.0直接patch mksu_susfs_fix.patch补丁
 
 - [KernelSU](https://github.com/tiann/KernelSU)： 原始项目
 - [MKSU](https://github.com/5ec1cff/KernelSU)：使用的项目
-- 内核辅助超级用户](https://git.zx2c4.com/kernel-assisted-superuser/about/)： KernelSU 的构想
+- [内核辅助超级用户](https://git.zx2c4.com/kernel-assisted-superuser/about/)： KernelSU 的构想
 - [Magisk](https://github.com/topjohnwu/Magisk)： 强大的 root 工具
 - [genuine](https://github.com/brevent/genuine/)： APK v2 签名验证
 - [Diamorphine](https://github.com/m0nad/Diamorphine)： 一些 rootkit 技能
