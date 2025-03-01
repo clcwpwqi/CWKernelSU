@@ -58,12 +58,21 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
 
+    // 简洁模块开关状态
+    var isSimpleMode by remember {
+        mutableStateOf(prefs.getBoolean("is_simple_mode", false))
+    }
+
+    // 更新简洁模块开关状态
+    val onSimpleModeChange = { newValue: Boolean ->
+        prefs.edit().putBoolean("is_simple_mode", newValue).apply()
+        isSimpleMode = newValue
+    }
+
     // SELinux 状态
     var selinuxEnabled by remember {
         mutableStateOf(Shell.cmd("getenforce").exec().out.firstOrNull() == "Enforcing")
     }
-
-
 
     // 卡片配置状态
     var cardAlpha by rememberSaveable { mutableStateOf(CardConfig.cardAlpha) }
@@ -124,6 +133,16 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                 Shell.getShell().newJob().add(command).exec().let { result ->
                     if (result.isSuccess) selinuxEnabled = enabled
                 }
+            }
+
+            // 添加简洁模块开关
+            SwitchItem(
+                icon = Icons.Filled.FormatPaint,
+                title = stringResource(R.string.simple_mode),
+                summary = stringResource(R.string.simple_mode_summary),
+                checked = isSimpleMode
+            ) {
+                onSimpleModeChange(it)
             }
 
             // region SUSFS 配置（仅在支持时显示）

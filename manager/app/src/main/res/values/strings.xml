@@ -188,4 +188,6 @@
     <string name="selinux">SELinux</string>
     <string name="selinux_enabled">Enabled</string>
     <string name="selinux_disabled">Disabled</string>
+    <string name="simple_mode">simplicity mode</string>
+    <string name="simple_mode_summary">Hides unnecessary cards when turned on</string>
 </resources>

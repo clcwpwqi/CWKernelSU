@@ -47,13 +47,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(start = true)
 @Composable
 fun HomeScreen(navigator: DestinationsNavigator) {
+    val context = LocalContext.current
+    var isSimpleMode by rememberSaveable { mutableStateOf(false) }
+
+    // 从 SharedPreferences 加载简洁模式状态
+    LaunchedEffect(Unit) {
+        isSimpleMode = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+            .getBoolean("is_simple_mode", false)
+    }
     val kernelVersion = getKernelVersion()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
 
     Scaffold(
         topBar = {
@@ -106,33 +116,38 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 UpdateCard()
             }
             var clickCount by remember { mutableStateOf(0) }
-            AnimatedVisibility(
-                visible = clickCount < 3,
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                ElevatedCard(
-                    colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
-                    elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
+            if (!isSimpleMode) {
+                AnimatedVisibility(
+                    visible = clickCount < 3,
+                    exit = shrinkVertically() + fadeOut()
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                clickCount++
-                            }
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    ElevatedCard(
+                        colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
+                        elevation = CardDefaults.cardElevation(defaultElevation = getCardElevation())
                     ) {
-                        Text(
-                            text = stringResource(R.string.using_mksu_manager),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    clickCount++
+                                }
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.using_mksu_manager),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
             }
             InfoCard()
-            DonateCard()
-            LearnMoreCard()
+            if (!isSimpleMode) {
+                DonateCard()
+                LearnMoreCard()
+            }
+
             Spacer(Modifier)
         }
     }
@@ -242,12 +257,12 @@ private fun TopBar(
                 }
             }
 
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = stringResource(id = R.string.settings)
-                )
-            }
+            //IconButton(onClick = onSettingsClick) {
+            //    Icon(
+            //        imageVector = Icons.Filled.Settings,
+            //        contentDescription = stringResource(id = R.string.settings)
+            //    )
+            // }
         },
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         scrollBehavior = scrollBehavior
@@ -446,6 +461,8 @@ fun DonateCard() {
 @Composable
 private fun InfoCard() {
     val context = LocalContext.current
+    val isSimpleMode = LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        .getBoolean("is_simple_mode", false)
 
     ElevatedCard(
         colors = getCardColors(MaterialTheme.colorScheme.secondaryContainer),
@@ -469,41 +486,50 @@ private fun InfoCard() {
                 Text(text = content, style = MaterialTheme.typography.bodyMedium)
             }
 
-            InfoCardItem(stringResource(R.string.home_kernel), uname.release)
+                InfoCardItem(stringResource(R.string.home_kernel), uname.release)
 
-            Spacer(Modifier.height(16.dp))
-            val androidVersion = Build.VERSION.RELEASE
-            InfoCardItem(stringResource(R.string.home_android_version), androidVersion)
+            if (!isSimpleMode) {
+                Spacer(Modifier.height(16.dp))
+                val androidVersion = Build.VERSION.RELEASE
+                InfoCardItem(stringResource(R.string.home_android_version), androidVersion)
+            }
 
-            Spacer(Modifier.height(16.dp))
-            val deviceModel = Build.MODEL
-            InfoCardItem(stringResource(R.string.home_device_model), deviceModel)
 
-            Spacer(Modifier.height(16.dp))
-            val managerVersion = getManagerVersion(context)
-            InfoCardItem(
-                stringResource(R.string.home_manager_version),
-                "${managerVersion.first} (${managerVersion.second})"
-            )
+                Spacer(Modifier.height(16.dp))
+                val deviceModel = Build.MODEL
+                InfoCardItem(stringResource(R.string.home_device_model), deviceModel)
 
-            Spacer(Modifier.height(16.dp))
-            InfoCardItem(stringResource(R.string.home_selinux_status), getSELinuxStatus()
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            val isSUS_SU = getSuSFSFeatures() == "CONFIG_KSU_SUSFS_SUS_SU"
-            val suSFS = getSuSFS()
+                Spacer(Modifier.height(16.dp))
+                val managerVersion = getManagerVersion(context)
+                InfoCardItem(
+                    stringResource(R.string.home_manager_version),
+                    "${managerVersion.first} (${managerVersion.second})"
+                )
 
-            if (suSFS == "Supported") {
-                val susSUModeLabel = stringResource(R.string.sus_su_mode)
-                val susSUModeValue = susfsSUS_SU_Mode()  // 获取 SuS SU 模式的值
-                val susSUMode = if (isSUS_SU) " $susSUModeLabel $susSUModeValue" else ""
 
-                val label = stringResource(R.string.home_susfs_version)  // 获取 label 的值
-                val content = "${getSuSFSVersion()} (${getSuSFSVariant()})$susSUMode"
 
-                InfoCardItem(label, content)
+                Spacer(Modifier.height(16.dp))
+                InfoCardItem(stringResource(R.string.home_selinux_status), getSELinuxStatus())
+
+
+            if (!isSimpleMode) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                val isSUS_SU = getSuSFSFeatures() == "CONFIG_KSU_SUSFS_SUS_SU"
+                val suSFS = getSuSFS()
+
+                if (suSFS == "Supported") {
+                    val susSUModeLabel = stringResource(R.string.sus_su_mode)
+                    val susSUModeValue = susfsSUS_SU_Mode()  // 获取 SuS SU 模式的值
+                    val susSUMode = if (isSUS_SU) " $susSUModeLabel $susSUModeValue" else ""
+
+                    val label = stringResource(R.string.home_susfs_version)  // 获取 label 的值
+                    val content = "${getSuSFSVersion()} (${getSuSFSVariant()})$susSUMode"
+
+                    InfoCardItem(label, content)
+                }
             }
         }
     }
