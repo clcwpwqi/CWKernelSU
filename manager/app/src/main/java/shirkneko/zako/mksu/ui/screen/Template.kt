@@ -60,6 +60,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import shirkneko.zako.mksu.R
 import shirkneko.zako.mksu.ui.viewmodel.TemplateViewModel
+import androidx.lifecycle.compose.dropUnlessResumed
 
 /**
  * @author weishu
@@ -100,7 +101,7 @@ fun AppProfileTemplateScreen(
                 }
             }
             TopBar(
-                onBack = { navigator.popBackStack() },
+                onBack = dropUnlessResumed { navigator.popBackStack() },
                 onSync = {
                     scope.launch { viewModel.fetchTemplates(true) }
                 },

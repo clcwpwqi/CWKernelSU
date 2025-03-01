@@ -95,6 +95,7 @@ import shirkneko.zako.mksu.ui.util.getBugreportFile
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.lifecycle.compose.dropUnlessResumed
 
 
 /**
@@ -113,7 +114,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
             TopBar(
-                onBack = {
+                onBack = dropUnlessResumed  {
                     navigator.popBackStack()
                 },
                 scrollBehavior = scrollBehavior

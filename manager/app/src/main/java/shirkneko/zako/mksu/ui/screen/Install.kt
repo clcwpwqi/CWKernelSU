@@ -67,6 +67,7 @@ import shirkneko.zako.mksu.ui.util.getSupportedKmis
 import shirkneko.zako.mksu.ui.util.isAbDevice
 import shirkneko.zako.mksu.ui.util.isInitBoot
 import shirkneko.zako.mksu.ui.util.rootAvailable
+import androidx.lifecycle.compose.dropUnlessResumed
 
 /**
  * @author weishu
@@ -133,7 +134,7 @@ fun InstallScreen(navigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
             TopBar(
-                onBack = { navigator.popBackStack() },
+                onBack = dropUnlessResumed { navigator.popBackStack() },
                 onLkmUpload = onLkmUpload,
                 scrollBehavior = scrollBehavior
             )

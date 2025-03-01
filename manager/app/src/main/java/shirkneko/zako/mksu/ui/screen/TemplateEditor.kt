@@ -55,6 +55,7 @@ import shirkneko.zako.mksu.ui.util.getAppProfileTemplate
 import shirkneko.zako.mksu.ui.util.setAppProfileTemplate
 import shirkneko.zako.mksu.ui.viewmodel.TemplateViewModel
 import shirkneko.zako.mksu.ui.viewmodel.toJSON
+import androidx.lifecycle.compose.dropUnlessResumed
 
 /**
  * @author weishu
@@ -105,7 +106,7 @@ fun TemplateEditorScreen(
                 },
                 readOnly = readOnly,
                 summary = titleSummary,
-                onBack = { navigator.navigateBack(result = !readOnly) },
+                onBack = dropUnlessResumed { navigator.navigateBack(result = !readOnly) },
                 onDelete = {
                     if (deleteAppProfileTemplate(template.id)) {
                         navigator.navigateBack(result = true)
