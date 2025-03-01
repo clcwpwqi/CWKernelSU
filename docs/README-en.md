@@ -1,28 +1,28 @@
 # MKSU-SKN
-[english](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README.md) [简体中文](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README-zh.md)
+[english](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README-en.md) [简体中文](https://github.com/ShirkNeko/KernelSU/edit/susfs/docs/README.md)
 
-基于 [KernelSU](https://github.com/KernelSU/KernelSU) 的安卓设备 root 解决方案
+A [KernelSU](https://github.com/5ec1cff/KernelSU)-based root solution for Android devices.
 
-**实验性!使用风险自负!**
+**Experimental. Use at your own risk.**
 
-## 特点
+## Features
 
-1. 基于内核的 `su` 和 root 访问管理。
-2. 非基于 [OverlayFS](https://en.wikipedia.org/wiki/OverlayFS) 的模块系统。
-3. [应用程序配置文件](https://kernelsu.org/guide/app-profile.html)： 将 root 权限锁在笼子里。
-4. 更多自定义功能
-5. 更适合使用习惯的界面和功能
+1. Kernel-based `su` and root access management.
+2. Module system not based on [OverlayFS](https://en.wikipedia.org/wiki/OverlayFS).
+3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
+4. More customization
+5. More user-friendly interface and functionality
 
-## 许可证
+## License
 
-- kernel "目录下的文件是[GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)。
-- 除 “kernel ”目录外，所有其他部分均为[GPL-3.0 或更高版本](https://www.gnu.org/licenses/gpl-3.0.html)。
+- Files under the `kernel` directory are [GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+- All other parts except the `kernel` directory are [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.html).
 
-## 贡献
+## Credits
 
-- [KernelSU](https://github.com/tiann/KernelSU)： 原始项目
-- [MKSU](https://github.com/5ec1cff/KernelSU)：使用的项目
-- 内核辅助超级用户](https://git.zx2c4.com/kernel-assisted-superuser/about/)： KernelSU 的构想
-- [Magisk](https://github.com/topjohnwu/Magisk)： 强大的 root 工具
-- [genuine](https://github.com/brevent/genuine/)： APK v2 签名验证
-- [Diamorphine](https://github.com/m0nad/Diamorphine)： 一些 rootkit 技能
+- [KernelSU](https://github.com/tiann/KernelSU): The original project.
+- [MKSU](https://github.com/5ec1cff/KernelSU)：Items used
+- [Kernel-Assisted Superuser](https://git.zx2c4.com/kernel-assisted-superuser/about/): The KernelSU idea.
+- [Magisk](https://github.com/topjohnwu/Magisk): The powerful root tool.
+- [genuine](https://github.com/brevent/genuine/): APK v2 signature validation.
+- [Diamorphine](https://github.com/m0nad/Diamorphine): Some rootkit skills.
