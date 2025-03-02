@@ -18,11 +18,10 @@ curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/susfs/kernel/set
 
 
 ## 如何使用 
-- GKI2.0直接patch mksu_susfs_fix.patch补丁
+- GKI2.0直接patch MKSU-SKN_susfs.patch补丁
 
-- 非GKI设备还需要patch nongki_fix.patch和运行fix_nongki.sh
+- 非GKI设备还需要patch nongki_fix.patch和运行nongki_fix.sh
 
-- 对于vfs修补还需要运行 mksu_susfs_vfs_fix.sh
 
 
 ## 更多链接
