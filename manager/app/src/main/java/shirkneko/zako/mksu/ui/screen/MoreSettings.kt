@@ -150,14 +150,21 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
             val isSUS_SU = getSuSFSFeatures()
             if (suSFS == "Supported") {
                 if (isSUS_SU == "CONFIG_KSU_SUSFS_SUS_SU") {
-                    // 默认设置为 true，表示开关默认打开
+                    // 初始化时，默认启用
                     var isEnabled by rememberSaveable {
-                        mutableStateOf(true) // 默认打开
+                        mutableStateOf(true) // 默认启用
                     }
 
+                    // 在启动时检查状态
                     LaunchedEffect(Unit) {
-                        // 在启动时检查状态，但默认已经是 true
-                        isEnabled = susfsSUS_SU_Mode() == "2"
+                        // 如果当前模式不是2就强制启用
+                        val currentMode = susfsSUS_SU_Mode()
+                        val wasManuallyDisabled = prefs.getBoolean("enable_sus_su", true)
+                        if (currentMode != "2" && wasManuallyDisabled) {
+                            susfsSUS_SU_2() // 强制切换到模式2
+                            prefs.edit().putBoolean("enable_sus_su", true).apply()
+                        }
+                        isEnabled = currentMode == "2"
                     }
 
                     SwitchItem(
@@ -167,11 +174,14 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                         checked = isEnabled
                     ) {
                         if (it) {
+                            // 手动启用
                             susfsSUS_SU_2()
+                            prefs.edit().putBoolean("enable_sus_su", true).apply()
                         } else {
+                            // 手动关闭
                             susfsSUS_SU_0()
+                            prefs.edit().putBoolean("enable_sus_su", false).apply()
                         }
-                        prefs.edit().putBoolean("enable_sus_su", it).apply()
                         isEnabled = it
                     }
                 }
