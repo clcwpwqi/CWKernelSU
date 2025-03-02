@@ -150,11 +150,13 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
             val isSUS_SU = getSuSFSFeatures()
             if (suSFS == "Supported") {
                 if (isSUS_SU == "CONFIG_KSU_SUSFS_SUS_SU") {
+                    // 默认设置为 true，表示开关默认打开
                     var isEnabled by rememberSaveable {
-                        mutableStateOf(susfsSUS_SU_Mode() == "2")
+                        mutableStateOf(true) // 默认打开
                     }
 
                     LaunchedEffect(Unit) {
+                        // 在启动时检查状态，但默认已经是 true
                         isEnabled = susfsSUS_SU_Mode() == "2"
                     }
 
