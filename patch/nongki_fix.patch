@@ -820,28 +820,11 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  #include <linux/uaccess.h>
  #include <linux/workqueue.h>
  
-@@ -19,37 +26,32 @@
- #include "ksud.h"
- #include "kernel_compat.h"
- #include "selinux/selinux.h"
- 
- static const char KERNEL_SU_RC[] =
- 	"\n"
--
- 	"on post-fs-data\n"
- 	"    start logd\n"
--	// We should wait for the post-fs-data finish
- 	"    exec u:r:su:s0 root -- " KSUD_PATH " post-fs-data\n"
- 	"\n"
--
- 	"on nonencrypted\n"
- 	"    exec u:r:su:s0 root -- " KSUD_PATH " services\n"
- 	"\n"
--
+@@ -36,20 +43,20 @@
  	"on property:vold.decrypt=trigger_restart_framework\n"
  	"    exec u:r:su:s0 root -- " KSUD_PATH " services\n"
  	"\n"
--
+ 
  	"on property:sys.boot_completed=1\n"
  	"    exec u:r:su:s0 root -- " KSUD_PATH " boot-completed\n"
 -	"\n"
@@ -860,50 +843,9 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  
  #ifdef CONFIG_KSU_SUSFS_SUS_SU
  bool ksu_devpts_hook = false;
-@@ -65,13 +67,12 @@
- 		pr_info("ksu_on_post_fs_data already done\n");
- 		return;
- 	}
- 	done = true;
- 	pr_info("ksu_on_post_fs_data!\n");
- 	ksu_load_allow_list();
--	// sanity check, this may influence the performance
- 	stop_input_hook();
+@@ -146,12 +153,17 @@
  
- 	ksu_devpts_sid = ksu_get_devpts_sid();
- 	pr_info("devpts sid: %d\n", ksu_devpts_sid);
- }
- 
-@@ -106,21 +107,12 @@
- 	if (get_user(native, argv.ptr.native + nr))
- 		return ERR_PTR(-EFAULT);
- 
- 	return native;
- }
- 
--/*
-- * count() counts the number of strings in array ARGV.
-- */
--
--/*
-- * Make sure old GCC compiler can use __maybe_unused,
-- * Test passed in 4.4.x ~ 4.9.x when use GCC.
-- */
--
- static int __maybe_unused count(struct user_arg_ptr argv, int max)
- {
- 	int i = 0;
- 
- 	if (argv.ptr.native != NULL) {
- 		for (;;) {
-@@ -141,17 +133,21 @@
- 			cond_resched();
- 		}
- 	}
- 	return i;
- }
- 
--// IMPORTANT NOTE: the call from execve_handler_pre WON'T provided correct value for envp and flags in GKI version
+ // IMPORTANT NOTE: the call from execve_handler_pre WON'T provided correct value for envp and flags in GKI version
  int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
  			     struct user_arg_ptr *argv,
  			     struct user_arg_ptr *envp, int *flags)
@@ -919,7 +861,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	static bool first_app_process = true;
  
  	/* This applies to versions Android 10+ */
-@@ -297,12 +293,17 @@
+@@ -297,12 +309,17 @@
  	return ret;
  }
  
@@ -937,7 +879,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  
  	if (strcmp(current->comm, "init")) {
  		// we are only interest in `init` process
-@@ -405,12 +406,17 @@
+@@ -405,12 +422,17 @@
  	return count >= 3;
  }
  
@@ -955,7 +897,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  		if (val) {
  			// key pressed, count it
  			volumedown_pressed_count += 1;
-@@ -442,12 +448,34 @@
+@@ -442,12 +464,34 @@
  		return true;
  	}
  
@@ -990,7 +932,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	const char __user **filename_user =
  		(const char **)&PT_REGS_PARM1(real_regs);
  	const char __user *const __user *__argv =
-@@ -463,12 +491,23 @@
+@@ -463,12 +507,23 @@
  	ksu_strncpy_from_user_nofault(path, *filename_user, 32);
  	filename_in.name = path;
  
@@ -1014,7 +956,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  {
  	struct pt_regs *real_regs = PT_REAL_REGS(regs);
  	unsigned int fd = PT_REGS_PARM1(real_regs);
-@@ -513,23 +552,31 @@
+@@ -513,23 +568,31 @@
  }
  
  static void do_stop_input_hook(struct work_struct *work)
@@ -1046,7 +988,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  #endif
  }
  
-@@ -537,19 +584,24 @@
+@@ -537,19 +600,25 @@
  {
  	static bool input_hook_stopped = false;
  	if (input_hook_stopped) {
@@ -1062,7 +1004,7 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
 +#endif
  }
  
--// ksud: module support
+ // ksud: module support
  void ksu_ksud_init()
  {
 +#ifdef CONFIG_KPROBES
@@ -1072,26 +1014,28 @@ diff -u a/kernel/ksud.c b/kernel/ksud.c
  	pr_info("ksud: execve_kp: %d\n", ret);
  
  	ret = register_kprobe(&vfs_read_kp);
-@@ -558,15 +610,19 @@
+@@ -558,15 +627,21 @@
  	ret = register_kprobe(&input_event_kp);
  	pr_info("ksud: input_event_kp: %d\n", ret);
  
  	INIT_WORK(&stop_vfs_read_work, do_stop_vfs_read_hook);
  	INIT_WORK(&stop_execve_hook_work, do_stop_execve_hook);
  	INIT_WORK(&stop_input_hook_work, do_stop_input_hook);
++	
 +#endif
  }
  
  void ksu_ksud_exit()
  {
 +#ifdef CONFIG_KPROBES
++
  	unregister_kprobe(&execve_kp);
 -	// this should be done before unregister vfs_read_kp
 -	// unregister_kprobe(&vfs_read_kp);
 +	unregister_kprobe(&vfs_read_kp);
  	unregister_kprobe(&input_event_kp);
-+
-+	flush_scheduled_work(); // Ensure all work is completed
++	flush_scheduled_work(); 
++	
 +#endif
  }
 
