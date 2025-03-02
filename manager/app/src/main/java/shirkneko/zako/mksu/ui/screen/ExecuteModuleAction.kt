@@ -131,6 +131,7 @@ fun ExecuteModuleActionScreen(navigator: DestinationsNavigator, moduleId: String
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(onBack: () -> Unit = {}, onSave: () -> Unit = {}) {
+    val scope = rememberCoroutineScope()
     TopAppBar(
         title = { Text(stringResource(R.string.action)) },
         navigationIcon = {
@@ -139,7 +140,14 @@ private fun TopBar(onBack: () -> Unit = {}, onSave: () -> Unit = {}) {
             ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
         },
         actions = {
-            IconButton(onClick = onSave) {
+            IconButton(onClick = {
+                scope.launch {
+                    onSave()
+                    // 延迟后退出
+                    kotlinx.coroutines.delay(6888)
+                    onBack()
+                }
+            }) {
                 Icon(
                     imageVector = Icons.Filled.Save,
                     contentDescription = stringResource(id = R.string.save_log),
