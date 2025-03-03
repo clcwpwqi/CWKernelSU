@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -48,6 +47,7 @@ import shirkneko.zako.mksu.ui.screen.BottomBarDestination
 import shirkneko.zako.mksu.ui.theme.CardConfig
 import shirkneko.zako.mksu.ui.theme.KernelSUTheme
 import shirkneko.zako.mksu.ui.theme.loadCustomBackground
+import shirkneko.zako.mksu.ui.theme.loadThemeMode
 import shirkneko.zako.mksu.ui.util.LocalSnackbarHost
 import shirkneko.zako.mksu.ui.util.rootAvailable
 import shirkneko.zako.mksu.ui.util.install
@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
 
         // 加载保存的背景设置
         loadCustomBackground()
+        loadThemeMode()
         CardConfig.load(applicationContext)
 
 

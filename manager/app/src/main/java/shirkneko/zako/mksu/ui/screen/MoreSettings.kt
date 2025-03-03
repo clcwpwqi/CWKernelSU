@@ -23,6 +23,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -35,6 +36,7 @@ import shirkneko.zako.mksu.ui.component.SwitchItem
 import shirkneko.zako.mksu.ui.theme.CardConfig
 import shirkneko.zako.mksu.ui.theme.ThemeConfig
 import shirkneko.zako.mksu.ui.theme.saveCustomBackground
+import shirkneko.zako.mksu.ui.theme.saveThemeMode
 import shirkneko.zako.mksu.ui.util.getSuSFS
 import shirkneko.zako.mksu.ui.util.getSuSFSFeatures
 import shirkneko.zako.mksu.ui.util.susfsSUS_SU_0
@@ -57,6 +59,25 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
+
+    // 主题模式选择
+    var themeMode by remember {
+        mutableStateOf(
+            when(ThemeConfig.forceDarkMode) {
+                true -> 2 // 深色
+                false -> 1 // 浅色
+                null -> 0 // 跟随系统
+            }
+        )
+    }
+
+    var showThemeModeDialog by remember { mutableStateOf(false) }
+    // 主题模式选项
+    val themeOptions = listOf(
+        stringResource(R.string.theme_follow_system),
+        stringResource(R.string.theme_light),
+        stringResource(R.string.theme_dark)
+    )
 
     // 简洁模块开关状态
     var isSimpleMode by remember {
@@ -243,16 +264,62 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                             )
                         }
                     )
+                    ListItem(
+                        leadingContent = { Icon(Icons.Filled.DarkMode, null) },
+                        headlineContent = { Text(stringResource(R.string.theme_mode)) },
+                        supportingContent = { Text(themeOptions[themeMode]) },
+                        modifier = Modifier.clickable {
+                            // 显示选择对话框
+                            showThemeModeDialog = true
+                        }
+                    )
+
+// 主题模式选择对话框
+                    if (showThemeModeDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showThemeModeDialog = false },
+                            title = { Text(stringResource(R.string.theme_mode)) },
+                            text = {
+                                Column {
+                                    themeOptions.forEachIndexed { index, option ->
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    themeMode = index
+                                                    val newThemeMode = when(index) {
+                                                        0 -> null // 跟随系统
+                                                        1 -> false // 浅色
+                                                        2 -> true // 深色
+                                                        else -> null
+                                                    }
+                                                    context.saveThemeMode(newThemeMode)
+                                                    showThemeModeDialog = false
+                                                }
+                                                .padding(vertical = 12.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            RadioButton(
+                                                selected = themeMode == index,
+                                                onClick = null
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(option)
+                                        }
+                                    }
+                                }
+                            },
+                            confirmButton = {}
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-// 保存配置到 SharedPreferences
 
 
-// Slider 颜色配置（从 Settings.kt 迁移）
 @Composable
 fun getSliderColors(value: Float): SliderColors {
     val activeColor = Color.Magenta.copy(alpha = value)

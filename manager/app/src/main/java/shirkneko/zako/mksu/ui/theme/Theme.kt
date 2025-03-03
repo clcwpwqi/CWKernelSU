@@ -48,6 +48,7 @@ private val LightColorScheme = lightColorScheme(
 
 object ThemeConfig {
     var customBackgroundUri by mutableStateOf<Uri?>(null)
+    var forceDarkMode by mutableStateOf<Boolean?>(null) // null表示跟随系统
 }
 
 // 复制图片到应用内部存储
@@ -75,7 +76,11 @@ fun Context.copyImageToInternalStorage(uri: Uri): Uri? {
 
 @Composable
 fun KernelSUTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = when(ThemeConfig.forceDarkMode) {
+        true -> true
+        false -> false
+        null -> isSystemInDarkTheme()
+    },
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
@@ -185,4 +190,26 @@ fun Context.loadCustomBackground() {
     val uriString = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
         .getString("custom_background", null)
     ThemeConfig.customBackgroundUri = uriString?.let { Uri.parse(it) }
+}
+
+fun Context.saveThemeMode(forceDark: Boolean?) {
+    getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        .edit()
+        .putString("theme_mode", when(forceDark) {
+            true -> "dark"
+            false -> "light"
+            null -> "system"
+        })
+        .apply()
+    ThemeConfig.forceDarkMode = forceDark
+}
+
+fun Context.loadThemeMode() {
+    val mode = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        .getString("theme_mode", "system")
+    ThemeConfig.forceDarkMode = when(mode) {
+        "dark" -> true
+        "light" -> false
+        else -> null
+    }
 }
