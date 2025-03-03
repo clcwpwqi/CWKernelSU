@@ -37,6 +37,7 @@ curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/susfs/kernel/set
 3. [应用程序配置文件](https://kernelsu.org/guide/app-profile.html)： 将 root 权限锁在笼子里。
 4. 更多自定义功能
 5. 更适合使用习惯的界面和功能
+6. 
 
 
 
