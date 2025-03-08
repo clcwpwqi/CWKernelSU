@@ -1,24 +1,57 @@
-# MKSU
+# MKSU-SKN
 
-A [KernelSU](https://github.com/tiann/KernelSU/commit/eeffecbd1bd7d49672a1c6bd52d95d28a42acb21)-based root solution for Android devices.
+**简体中文** | [Enlish](README-en.md)
 
-**Experimental. Use at your own risk.**
+基于 [KernelSU](https://github.com/KernelSU/KernelSU) 的安卓设备 root 解决方案
 
-## Features
+**实验性!使用风险自负!**
 
-1. Kernel-based `su` and root access management.
-2. Module system not based on [OverlayFS](https://en.wikipedia.org/wiki/OverlayFS).
-3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
 
-## License
+>
+> 这是非官方分叉，保留所有权利 [@tiann](https://github.com/tiann)
 
-- Files under the `kernel` directory are [GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
-- All other parts except the `kernel` directory are [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.html).
+- 已经完全适配非GKI设备
 
-## Credits
+## 如何添加
+```
+curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/setup.sh" | bash -s susfs_patch
+```
 
-- [KernelSU](https://github.com/tiann/KernelSU): The original project.
-- [Kernel-Assisted Superuser](https://git.zx2c4.com/kernel-assisted-superuser/about/): The KernelSU idea.
-- [Magisk](https://github.com/topjohnwu/Magisk): The powerful root tool.
-- [genuine](https://github.com/brevent/genuine/): APK v2 signature validation.
-- [Diamorphine](https://github.com/m0nad/Diamorphine): Some rootkit skills.
+
+
+## 如何使用 
+
+直接使用susfs-dev分支不需要打任何补丁
+
+
+或者使用默认分支进行补丁，文件在ptach里
+
+## 更多链接
+基于MKSU-SKN和susfs编译的项目
+- [GKI](https://github.com/ShirkNeko/GKI_KernelSU_SUSFS) 
+- [一加](https://github.com/ShirkNeko/Action_OnePlus_MKSU_SUSFS)
+
+
+## 特点
+
+1. 基于内核的 `su` 和 root 访问管理。
+2. 非基于 [OverlayFS](https://en.wikipedia.org/wiki/OverlayFS) 的模块系统。
+3. [应用程序配置文件](https://kernelsu.org/guide/app-profile.html)： 将 root 权限锁在笼子里。
+4. 更多自定义功能
+5. 更适合使用习惯的界面和功能
+
+
+
+## 许可证
+
+- kernel "目录下的文件是[GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)。
+- 除 “kernel ”目录外，所有其他部分均为[GPL-3.0 或更高版本](https://www.gnu.org/licenses/gpl-3.0.html)。
+
+## 贡献
+
+- [KernelSU](https://github.com/tiann/KernelSU)： 原始项目
+- [MKSU](https://github.com/5ec1cff/KernelSU)：使用的项目
+- [内核辅助超级用户](https://git.zx2c4.com/kernel-assisted-superuser/about/)： KernelSU 的构想
+- [Magisk](https://github.com/topjohnwu/Magisk)： 强大的 root 工具
+- [genuine](https://github.com/brevent/genuine/)： APK v2 签名验证
+- [Diamorphine](https://github.com/m0nad/Diamorphine)： 一些 rootkit 技能
