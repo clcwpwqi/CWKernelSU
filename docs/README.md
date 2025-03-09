@@ -2,7 +2,7 @@
 
 **简体中文** | [English](README-en.md)
 
-基于 [KernelSU](https://github.com/KernelSU/KernelSU) 的安卓设备 root 解决方案
+基于 [KernelSU](https://github.com/tiann/KernelSU) 的安卓设备 root 解决方案
 
 **实验性!使用风险自负!**
 
