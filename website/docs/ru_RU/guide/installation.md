@@ -154,7 +154,7 @@ fastboot reboot
 
 1. Загрузите последнюю версию Magisk с [Release Page](https://github.com/topjohnwu/Magisk/releases).
 2. Переименуйте `Magisk-*(version).apk` в `Magisk-*.zip` и разархивируйте его.
-3. Закачайте `Magisk-*/lib/arm64-v8a/libmagiskboot.so` на устройство с помощью adb: `adb push Magisk-*/lib/arm64-v8a/libmagiskboot.so /data/local/tmp/magiskboot`.
+3. Закачайте `Magisk-*/lib/arm64-v8a/zakoboot.so` на устройство с помощью adb: `adb push Magisk-*/lib/arm64-v8a/zakoboot.so /data/local/tmp/magiskboot`.
 4. Установите на устройство стоковый boot.img и образ в AnyKernel3.
 5. Войдите в оболочку adb и перейдите в каталог `/data/local/tmp/`, затем `chmod +x magiskboot`.
 6. Войдите в adb shell и cd директории `/data/local/tmp/`, выполните команду `./magiskboot unpack boot.img` для распаковки `boot.img`, вы получите файл `kernel`, это и есть ваше стоковое ядро.

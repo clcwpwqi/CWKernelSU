@@ -238,7 +238,7 @@ Android-Image-Kitchen isn't recommended for now because it doesn't handle the bo
 
 1. Download latest Magisk from [GitHub Releases](https://github.com/topjohnwu/Magisk/releases).
 2. Rename `Magisk-*(version).apk` to `Magisk-*.zip` and unzip it.
-3. Push `Magisk-*/lib/arm64-v8a/libmagiskboot.so` to your device by ADB: `adb push Magisk-*/lib/arm64-v8a/libmagiskboot.so /data/local/tmp/magiskboot`
+3. Push `Magisk-*/lib/arm64-v8a/zakoboot.so` to your device by ADB: `adb push Magisk-*/lib/arm64-v8a/zakoboot.so /data/local/tmp/magiskboot`
 4. Push stock boot.img and Image in AnyKernel3 to your device.
 5. Enter ADB shell and run `cd /data/local/tmp/` directory, then `chmod +x magiskboot`
 6. Enter ADB shell and run `cd /data/local/tmp/` directory, execute `./magiskboot unpack boot.img` to unpack `boot.img`, you will get a `kernel` file, this is your stock kernel.
