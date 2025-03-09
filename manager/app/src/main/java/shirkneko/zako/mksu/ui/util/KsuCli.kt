@@ -99,7 +99,7 @@ fun execKsud(args: String, newShell: Boolean = false): Boolean {
 
 fun install() {
     val start = SystemClock.elapsedRealtime()
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so").absolutePath
+    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libzakoboot.so").absolutePath
     val result = execKsud("install --magiskboot $magiskboot", true)
     Log.w(TAG, "install result: $result, cost: ${SystemClock.elapsedRealtime() - start}ms")
 }
@@ -222,7 +222,7 @@ fun runModuleAction(
 fun restoreBoot(
     onFinish: (Boolean, Int) -> Unit, onStdout: (String) -> Unit, onStderr: (String) -> Unit
 ): Boolean {
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
+    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libzakoboot.so")
     val result = flashWithIO("${getKsuDaemonPath()} boot-restore -f --magiskboot $magiskboot", onStdout, onStderr)
     onFinish(result.isSuccess, result.code)
     return result.isSuccess
@@ -231,7 +231,7 @@ fun restoreBoot(
 fun uninstallPermanently(
     onFinish: (Boolean, Int) -> Unit, onStdout: (String) -> Unit, onStderr: (String) -> Unit
 ): Boolean {
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
+    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libzakoboot.so")
     val result = flashWithIO("${getKsuDaemonPath()} uninstall --magiskboot $magiskboot", onStdout, onStderr)
     onFinish(result.isSuccess, result.code)
     return result.isSuccess
@@ -265,7 +265,7 @@ fun installBoot(
         }
     }
 
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
+    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libzakoboot.so")
     var cmd = "boot-patch --magiskboot ${magiskboot.absolutePath}"
 
     cmd += if (bootFile == null) {
