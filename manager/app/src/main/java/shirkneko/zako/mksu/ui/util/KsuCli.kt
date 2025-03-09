@@ -437,7 +437,7 @@ fun restartApp(packageName: String) {
 }
 
 private fun getSuSFSDaemonPath(): String {
-    return ksuApp.applicationInfo.nativeLibraryDir + File.separator + "libsusfsd.so"
+    return ksuApp.applicationInfo.nativeLibraryDir + File.separator + "zakomksd.so"
 }
 
 fun getSuSFS(): String {
