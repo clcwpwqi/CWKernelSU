@@ -30,7 +30,7 @@ object Natives {
     const val ROOT_GID = 0
 
     init {
-        System.loadLibrary("kernelsu")
+        System.loadLibrary("zako")
     }
 
     // become root manager, return true if success.
