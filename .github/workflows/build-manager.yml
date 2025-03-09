@@ -182,13 +182,13 @@ jobs:
         run: |
           mkdir -p app/src/main/jniLibs/arm64-v8a
           mkdir -p app/src/main/jniLibs/x86_64
-          cp -f ../aarch64-linux-android/release/zakomk ../manager/app/src/main/jniLibs/arm64-v8a/zakomk.so
-          cp -f ../x86_64-linux-android/release/zakomk ../manager/app/src/main/jniLibs/x86_64/zakomk.so
+          cp -f ../aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/zakomk.so
+          cp -f ../x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/zakomk.so
 
       - name: Copy susfsd to app jniLibs
         run: |
           mkdir -p app/src/main/jniLibs/arm64-v8a
-          cp -f ../arm64-v8a/zakomksd ../manager/app/src/main/jniLibs/arm64-v8a/zakomksd.so
+          cp -f ../arm64-v8a/susfsd ../manager/app/src/main/jniLibs/arm64-v8a/zakomksd.so
 
       - name: Build with Gradle
         run: |
