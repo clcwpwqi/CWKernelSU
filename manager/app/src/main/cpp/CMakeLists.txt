@@ -5,12 +5,12 @@
 # Sets the minimum version of CMake required to build the native library.
 cmake_minimum_required(VERSION 3.18.1)
 
-project("zako")
+project("kernelsu")
 
 find_package(cxx REQUIRED CONFIG)
 link_libraries(cxx::cxx)
 
-add_library(zako
+add_library(kernelsu
         SHARED
         jni.cc
         ksu.cc
@@ -18,4 +18,4 @@ add_library(zako
 
 find_library(log-lib log)
 
-target_link_libraries(zako ${log-lib})
+target_link_libraries(kernelsu ${log-lib})
