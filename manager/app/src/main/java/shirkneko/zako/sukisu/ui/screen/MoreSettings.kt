@@ -130,7 +130,7 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
         "粉色" to ThemeColors.Pink
     )
 
-    var showThemeColorDialog by remember { mutableStateOf(true) }
+    var showThemeColorDialog by remember { mutableStateOf(false) }
 
     // 图片选择器
     val pickImageLauncher = rememberLauncherForActivityResult(
