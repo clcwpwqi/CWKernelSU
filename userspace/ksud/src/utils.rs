@@ -210,7 +210,7 @@ pub fn get_work_dir() -> String {
 }
 
 #[cfg(target_os = "android")]
-fn link__to_bin() -> Result<()> {
+fn link_zakomk_to_bin() -> Result<()> {
     let ksu_bin = PathBuf::from(defs::DAEMON_PATH);
     let ksu_bin_link = PathBuf::from(defs::DAEMON_LINK_PATH);
     if ksu_bin.exists() && !ksu_bin_link.exists() {
