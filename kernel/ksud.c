@@ -69,7 +69,6 @@ static struct work_struct stop_execve_hook_work;
 static struct work_struct stop_input_hook_work;
 
 #ifdef CONFIG_KSU_SUSFS_SUS_SU
-bool ksu_devpts_hook = false;
 bool susfs_is_sus_su_ready = false;
 #endif // #ifdef CONFIG_KSU_SUSFS_SUS_SU
 
