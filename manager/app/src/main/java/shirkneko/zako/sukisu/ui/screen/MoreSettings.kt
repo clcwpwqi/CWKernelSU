@@ -230,6 +230,83 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                 }
             }
             // endregion
+            // 动态颜色开关
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                SwitchItem(
+                    icon = Icons.Filled.ColorLens,
+                    title = "动态颜色",
+                    summary = "使用系统主题的动态颜色",
+                    checked = useDynamicColor
+                ) { enabled ->
+                    useDynamicColor = enabled
+                    context.saveDynamicColorState(enabled)
+                }
+            }
+            // 只在未启用动态颜色时显示主题色选择
+            if (!useDynamicColor) {
+                ListItem(
+                    leadingContent = { Icon(Icons.Default.Palette, null) },
+                    headlineContent = { Text("主题颜色") },
+                    supportingContent = {
+                        val currentThemeName = when (ThemeConfig.currentTheme) {
+                            is ThemeColors.Default -> "默认黄色"
+                            is ThemeColors.Blue -> "蓝色"
+                            is ThemeColors.Green -> "绿色"
+                            is ThemeColors.Purple -> "紫色"
+                            is ThemeColors.Orange -> "橙色"
+                            is ThemeColors.Pink -> "粉色"
+                            else -> "默认"
+                        }
+                        Text(currentThemeName)
+                    },
+                    modifier = Modifier.clickable { showThemeColorDialog = true }
+                )
+
+                if (showThemeColorDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showThemeColorDialog = false },
+                        title = { Text("选择主题色") },
+                        text = {
+                            Column {
+                                themeColorOptions.forEach { (name, theme) ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                context.saveThemeColors(when (theme) {
+                                                    ThemeColors.Default -> "default"
+                                                    ThemeColors.Blue -> "blue"
+                                                    ThemeColors.Green -> "green"
+                                                    ThemeColors.Purple -> "purple"
+                                                    ThemeColors.Orange -> "orange"
+                                                    ThemeColors.Pink -> "pink"
+                                                    else -> "default"
+                                                })
+                                                showThemeColorDialog = false
+                                            }
+                                            .padding(vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = ThemeConfig.currentTheme::class == theme::class,
+                                            onClick = null
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .background(theme.Primary, shape = CircleShape)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(name)
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {}
+                    )
+                }
+            }
 
             // 自定义背景开关
             SwitchItem(
@@ -333,83 +410,6 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                             },
                             confirmButton = {}
                         )
-                    }
-                    // 动态颜色开关
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        SwitchItem(
-                            icon = Icons.Filled.ColorLens,
-                            title = "动态颜色",
-                            summary = "使用系统主题的动态颜色",
-                            checked = useDynamicColor
-                        ) { enabled ->
-                            useDynamicColor = enabled
-                            context.saveDynamicColorState(enabled)
-                        }
-                    }
-                    // 只在未启用动态颜色时显示主题色选择
-                    if (!useDynamicColor) {
-                        ListItem(
-                            leadingContent = { Icon(Icons.Default.Palette, null) },
-                            headlineContent = { Text("主题颜色") },
-                            supportingContent = {
-                                val currentThemeName = when (ThemeConfig.currentTheme) {
-                                    is ThemeColors.Default -> "默认黄色"
-                                    is ThemeColors.Blue -> "蓝色"
-                                    is ThemeColors.Green -> "绿色"
-                                    is ThemeColors.Purple -> "紫色"
-                                    is ThemeColors.Orange -> "橙色"
-                                    is ThemeColors.Pink -> "粉色"
-                                    else -> "默认"
-                                }
-                                Text(currentThemeName)
-                            },
-                            modifier = Modifier.clickable { showThemeColorDialog = true }
-                        )
-
-                        if (showThemeColorDialog) {
-                            AlertDialog(
-                                onDismissRequest = { showThemeColorDialog = false },
-                                title = { Text("选择主题色") },
-                                text = {
-                                    Column {
-                                        themeColorOptions.forEach { (name, theme) ->
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        context.saveThemeColors(when (theme) {
-                                                            ThemeColors.Default -> "default"
-                                                            ThemeColors.Blue -> "blue"
-                                                            ThemeColors.Green -> "green"
-                                                            ThemeColors.Purple -> "purple"
-                                                            ThemeColors.Orange -> "orange"
-                                                            ThemeColors.Pink -> "pink"
-                                                            else -> "default"
-                                                        })
-                                                        showThemeColorDialog = false
-                                                    }
-                                                    .padding(vertical = 12.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                RadioButton(
-                                                    selected = ThemeConfig.currentTheme::class == theme::class,
-                                                    onClick = null
-                                                )
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(24.dp)
-                                                        .background(theme.Primary, shape = CircleShape)
-                                                )
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Text(name)
-                                            }
-                                        }
-                                    }
-                                },
-                                confirmButton = {}
-                            )
-                        }
                     }
                 }
             }
