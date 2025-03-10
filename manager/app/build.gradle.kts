@@ -25,7 +25,7 @@ apksign {
 }
 
 android {
-    namespace = "shirkneko.zako.mksu"
+    namespace = "shirkneko.zako.sukisu"
 
     buildTypes {
         release {
@@ -70,7 +70,7 @@ android {
     applicationVariants.all {
         outputs.forEach {
             val output = it as BaseVariantOutputImpl
-            output.outputFileName = "MKSU-SKN_${managerVersionName}_${managerVersionCode}-$name.apk"
+            output.outputFileName = "sukiSU_${managerVersionName}_${managerVersionCode}-$name.apk"
         }
         kotlin.sourceSets {
             getByName(name) {
