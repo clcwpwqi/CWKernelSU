@@ -65,7 +65,6 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
-
     // 主题模式选择
     var themeMode by remember {
         mutableStateOf(
@@ -111,21 +110,6 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
     var showCardSettings by remember { mutableStateOf(false) }
     var isCustomBackgroundEnabled by rememberSaveable {
         mutableStateOf(ThemeConfig.customBackgroundUri != null)
-    }
-
-    // 自定义颜色状态
-    var showCustomColorDialog by remember { mutableStateOf(false) }
-    var customColorHex by remember { mutableStateOf("") }
-
-    // 解析颜色结果
-    val parsedColor by remember(customColorHex) {
-        mutableStateOf(
-            if (customColorHex.length == 6) {
-                runCatching {
-                    Color(android.graphics.Color.parseColor("#$customColorHex"))
-                }.getOrNull()
-            } else null
-        )
     }
 
     // 初始化卡片配置
@@ -246,7 +230,6 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                 }
             }
             // endregion
-
             // 动态颜色开关
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 SwitchItem(
@@ -259,7 +242,6 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                     context.saveDynamicColorState(enabled)
                 }
             }
-
             // 只在未启用动态颜色时显示主题色选择
             if (!useDynamicColor) {
                 ListItem(
@@ -279,73 +261,6 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                     },
                     modifier = Modifier.clickable { showThemeColorDialog = true }
                 )
-
-                // 添加自定义颜色按钮
-                ListItem(
-                    leadingContent = { Icon(Icons.Default.ColorLens, null) },
-                    headlineContent = { Text("自定义颜色") },
-                    supportingContent = { Text("输入十六进制颜色代码") },
-                    modifier = Modifier.clickable { showCustomColorDialog = true }
-                )
-
-                if (showCustomColorDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showCustomColorDialog = false },
-                        title = { Text("输入自定义颜色") },
-                        text = {
-                            Column {
-                                OutlinedTextField(
-                                    value = customColorHex,
-                                    onValueChange = {
-                                        if (it.matches(Regex("^[0-9A-Fa-f]*$"))) {
-                                            customColorHex = it.uppercase()
-                                        }
-                                    },
-                                    label = { Text("颜色代码 (例如: FF5733)") },
-                                    singleLine = true,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // 预览颜色
-                                parsedColor?.let { color ->
-                                    Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .background(color, CircleShape)
-                                    )
-                                } ?: run {
-                                    if (customColorHex.length == 6) {
-                                        Text("无效的颜色代码", color = Color.Red)
-                                    }
-                                }
-                            }
-                        },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    parsedColor?.let { color ->
-                                        ThemeConfig.currentTheme = ThemeColors.Custom(color)
-                                        context.getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
-                                            .edit()
-                                            .putString("theme_colors", "custom")
-                                            .putString("custom_color", customColorHex)
-                                            .apply()
-                                        showCustomColorDialog = false
-                                    }
-                                }
-                            ) {
-                                Text("确定")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showCustomColorDialog = false }) {
-                                Text("取消")
-                            }
-                        }
-                    )
-                }
 
                 if (showThemeColorDialog) {
                     AlertDialog(
