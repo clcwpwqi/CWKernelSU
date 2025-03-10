@@ -210,7 +210,7 @@ pub fn get_work_dir() -> String {
 }
 
 #[cfg(target_os = "android")]
-fn link_zakomk_to_bin() -> Result<()> {
+fn link_ksud_to_bin() -> Result<()> {
     let ksu_bin = PathBuf::from(defs::DAEMON_PATH);
     let ksu_bin_link = PathBuf::from(defs::DAEMON_LINK_PATH);
     if ksu_bin.exists() && !ksu_bin_link.exists() {
@@ -227,7 +227,7 @@ pub fn install(magiskboot: Option<PathBuf>) -> Result<()> {
     assets::ensure_binaries(false).with_context(|| "Failed to extract assets")?;
 
     #[cfg(target_os = "android")]
-    link_zakomk_to_bin()?;
+    link_ksud_to_bin()?;
 
     if let Some(magiskboot) = magiskboot {
         ensure_dir_exists(defs::BINARY_DIR)?;

@@ -72,7 +72,7 @@ print_title() {
 }
 
 check_sepolicy() {
-    /data/adb/zakomk sepolicy check "$1"
+    /data/adb/ksud sepolicy check "$1"
     return $?
 }
 
