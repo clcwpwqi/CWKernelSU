@@ -2,6 +2,7 @@ package shirkneko.zako.sukisu.ui.screen
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,8 +19,10 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,9 +37,12 @@ import kotlinx.coroutines.launch
 import shirkneko.zako.sukisu.R
 import shirkneko.zako.sukisu.ui.component.SwitchItem
 import shirkneko.zako.sukisu.ui.theme.CardConfig
+import shirkneko.zako.sukisu.ui.theme.ThemeColors
 import shirkneko.zako.sukisu.ui.theme.ThemeConfig
 import shirkneko.zako.sukisu.ui.theme.saveCustomBackground
+import shirkneko.zako.sukisu.ui.theme.saveThemeColors
 import shirkneko.zako.sukisu.ui.theme.saveThemeMode
+import shirkneko.zako.sukisu.ui.theme.saveDynamicColorState
 import shirkneko.zako.sukisu.ui.util.getSuSFS
 import shirkneko.zako.sukisu.ui.util.getSuSFSFeatures
 import shirkneko.zako.sukisu.ui.util.susfsSUS_SU_0
@@ -59,7 +65,6 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
-
     // 主题模式选择
     var themeMode by remember {
         mutableStateOf(
@@ -69,6 +74,11 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                 null -> 0 // 跟随系统
             }
         )
+    }
+
+    // 动态颜色开关状态
+    var useDynamicColor by remember {
+        mutableStateOf(ThemeConfig.useDynamicColor)
     }
 
     var showThemeModeDialog by remember { mutableStateOf(false) }
@@ -109,6 +119,18 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
             cardElevation = if (prefs.getBoolean("custom_background_enabled", false)) 0.dp else CardConfig.defaultElevation
         }
     }
+
+    // 主题色选项
+    val themeColorOptions = listOf(
+        "默认黄色" to ThemeColors.Default,
+        "蓝色" to ThemeColors.Blue,
+        "绿色" to ThemeColors.Green,
+        "紫色" to ThemeColors.Purple,
+        "橙色" to ThemeColors.Orange,
+        "粉色" to ThemeColors.Pink
+    )
+
+    var showThemeColorDialog by remember { mutableStateOf(true) }
 
     // 图片选择器
     val pickImageLauncher = rememberLauncherForActivityResult(
@@ -264,17 +286,17 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                             )
                         }
                     )
+
                     ListItem(
                         leadingContent = { Icon(Icons.Filled.DarkMode, null) },
                         headlineContent = { Text(stringResource(R.string.theme_mode)) },
                         supportingContent = { Text(themeOptions[themeMode]) },
                         modifier = Modifier.clickable {
-                            // 显示选择对话框
                             showThemeModeDialog = true
                         }
                     )
 
-// 主题模式选择对话框
+                    // 主题模式选择对话框
                     if (showThemeModeDialog) {
                         AlertDialog(
                             onDismissRequest = { showThemeModeDialog = false },
@@ -312,13 +334,88 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                             confirmButton = {}
                         )
                     }
+                    // 动态颜色开关
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        SwitchItem(
+                            icon = Icons.Filled.ColorLens,
+                            title = "动态颜色",
+                            summary = "使用系统主题的动态颜色",
+                            checked = useDynamicColor
+                        ) { enabled ->
+                            useDynamicColor = enabled
+                            context.saveDynamicColorState(enabled)
+                        }
+                    }
+                    // 只在未启用动态颜色时显示主题色选择
+                    if (!useDynamicColor) {
+                        ListItem(
+                            leadingContent = { Icon(Icons.Default.Palette, null) },
+                            headlineContent = { Text("主题颜色") },
+                            supportingContent = {
+                                val currentThemeName = when (ThemeConfig.currentTheme) {
+                                    is ThemeColors.Default -> "默认黄色"
+                                    is ThemeColors.Blue -> "蓝色"
+                                    is ThemeColors.Green -> "绿色"
+                                    is ThemeColors.Purple -> "紫色"
+                                    is ThemeColors.Orange -> "橙色"
+                                    is ThemeColors.Pink -> "粉色"
+                                    else -> "默认"
+                                }
+                                Text(currentThemeName)
+                            },
+                            modifier = Modifier.clickable { showThemeColorDialog = true }
+                        )
+
+                        if (showThemeColorDialog) {
+                            AlertDialog(
+                                onDismissRequest = { showThemeColorDialog = false },
+                                title = { Text("选择主题色") },
+                                text = {
+                                    Column {
+                                        themeColorOptions.forEach { (name, theme) ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        context.saveThemeColors(when (theme) {
+                                                            ThemeColors.Default -> "default"
+                                                            ThemeColors.Blue -> "blue"
+                                                            ThemeColors.Green -> "green"
+                                                            ThemeColors.Purple -> "purple"
+                                                            ThemeColors.Orange -> "orange"
+                                                            ThemeColors.Pink -> "pink"
+                                                            else -> "default"
+                                                        })
+                                                        showThemeColorDialog = false
+                                                    }
+                                                    .padding(vertical = 12.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                RadioButton(
+                                                    selected = ThemeConfig.currentTheme::class == theme::class,
+                                                    onClick = null
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(24.dp)
+                                                        .background(theme.Primary, shape = CircleShape)
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(name)
+                                            }
+                                        }
+                                    }
+                                },
+                                confirmButton = {}
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-
 
 @Composable
 fun getSliderColors(value: Float): SliderColors {

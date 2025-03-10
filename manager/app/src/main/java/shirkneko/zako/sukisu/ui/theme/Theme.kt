@@ -30,26 +30,48 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-private val DarkColorScheme = darkColorScheme(
-    primary = YELLOW,
-    secondary = YELLOW_DARK,
-    tertiary = SECONDARY_DARK,
-    background = Color.Transparent,
-    surface = Color.Transparent
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = YELLOW,
-    secondary = YELLOW_LIGHT,
-    tertiary = SECONDARY_LIGHT,
-    background = Color.Transparent,
-    surface = Color.Transparent
-)
-
 object ThemeConfig {
     var customBackgroundUri by mutableStateOf<Uri?>(null)
-    var forceDarkMode by mutableStateOf<Boolean?>(null) // null表示跟随系统
+    var forceDarkMode by mutableStateOf<Boolean?>(null)
+    var currentTheme by mutableStateOf<ThemeColors>(ThemeColors.Default)
+    var useDynamicColor by mutableStateOf(false)
 }
+
+@Composable
+private fun getDarkColorScheme() = darkColorScheme(
+    primary = ThemeConfig.currentTheme.Primary,
+    onPrimary = ThemeConfig.currentTheme.OnPrimary,
+    primaryContainer = ThemeConfig.currentTheme.PrimaryContainer,
+    onPrimaryContainer = ThemeConfig.currentTheme.OnPrimaryContainer,
+    secondary = ThemeConfig.currentTheme.Secondary,
+    onSecondary = ThemeConfig.currentTheme.OnSecondary,
+    secondaryContainer = ThemeConfig.currentTheme.SecondaryContainer,
+    onSecondaryContainer = ThemeConfig.currentTheme.OnSecondaryContainer,
+    tertiary = ThemeConfig.currentTheme.Tertiary,
+    onTertiary = ThemeConfig.currentTheme.OnTertiary,
+    tertiaryContainer = ThemeConfig.currentTheme.TertiaryContainer,
+    onTertiaryContainer = ThemeConfig.currentTheme.OnTertiaryContainer,
+    background = Color.Transparent,
+    surface = Color.Transparent
+)
+
+@Composable
+private fun getLightColorScheme() = lightColorScheme(
+    primary = ThemeConfig.currentTheme.Primary,
+    onPrimary = ThemeConfig.currentTheme.OnPrimary,
+    primaryContainer = ThemeConfig.currentTheme.PrimaryContainer,
+    onPrimaryContainer = ThemeConfig.currentTheme.OnPrimaryContainer,
+    secondary = ThemeConfig.currentTheme.Secondary,
+    onSecondary = ThemeConfig.currentTheme.OnSecondary,
+    secondaryContainer = ThemeConfig.currentTheme.SecondaryContainer,
+    onSecondaryContainer = ThemeConfig.currentTheme.OnSecondaryContainer,
+    tertiary = ThemeConfig.currentTheme.Tertiary,
+    onTertiary = ThemeConfig.currentTheme.OnTertiary,
+    tertiaryContainer = ThemeConfig.currentTheme.TertiaryContainer,
+    onTertiaryContainer = ThemeConfig.currentTheme.OnTertiaryContainer,
+    background = Color.Transparent,
+    surface = Color.Transparent
+)
 
 // 复制图片到应用内部存储
 fun Context.copyImageToInternalStorage(uri: Uri): Uri? {
@@ -81,12 +103,13 @@ fun KernelSUTheme(
         false -> false
         null -> isSystemInDarkTheme()
     },
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = ThemeConfig.useDynamicColor,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    // 在应用启动时加载自定义背景设置
     context.loadCustomBackground()
+    context.loadThemeColors()
+    context.loadDynamicColorState()
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -98,8 +121,8 @@ fun KernelSUTheme(
                 surface = Color.Transparent
             )
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> getDarkColorScheme()
+        else -> getLightColorScheme()
     }
 
     MaterialTheme(
@@ -122,7 +145,6 @@ fun KernelSUTheme(
                                 painter = rememberAsyncImagePainter(
                                     model = uri,
                                     onError = {
-                                        // 图片加载失败，清空 Uri 并保存
                                         ThemeConfig.customBackgroundUri = null
                                         context.saveCustomBackground(null)
                                     }
@@ -176,7 +198,7 @@ fun KernelSUTheme(
     }
 }
 
-// 用于保存和加载背景图片 URI 的扩展函数
+// 扩展函数
 fun Context.saveCustomBackground(uri: Uri?) {
     val newUri = uri?.let { copyImageToInternalStorage(it) }
     getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
@@ -212,4 +234,48 @@ fun Context.loadThemeMode() {
         "light" -> false
         else -> null
     }
+}
+
+fun Context.saveThemeColors(themeName: String) {
+    getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        .edit()
+        .putString("theme_colors", themeName)
+        .apply()
+
+    ThemeConfig.currentTheme = when(themeName) {
+        "blue" -> ThemeColors.Blue
+        "green" -> ThemeColors.Green
+        "purple" -> ThemeColors.Purple
+        "orange" -> ThemeColors.Orange
+        "pink" -> ThemeColors.Pink
+        else -> ThemeColors.Default
+    }
+}
+
+fun Context.loadThemeColors() {
+    val themeName = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        .getString("theme_colors", "default")
+
+    ThemeConfig.currentTheme = when(themeName) {
+        "blue" -> ThemeColors.Blue
+        "green" -> ThemeColors.Green
+        "purple" -> ThemeColors.Purple
+        "orange" -> ThemeColors.Orange
+        "pink" -> ThemeColors.Pink
+        else -> ThemeColors.Default
+    }
+}
+
+fun Context.saveDynamicColorState(enabled: Boolean) {
+    getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        .edit()
+        .putBoolean("use_dynamic_color", enabled)
+        .apply()
+    ThemeConfig.useDynamicColor = enabled
+}
+
+fun Context.loadDynamicColorState() {
+    val enabled = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        .getBoolean("use_dynamic_color", false)
+    ThemeConfig.useDynamicColor = enabled
 }
