@@ -1,6 +1,7 @@
 package shirkneko.zako.sukisu.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 
 sealed class ThemeColors {
     abstract val Primary: Color
@@ -15,6 +16,21 @@ sealed class ThemeColors {
     abstract val OnPrimaryContainer: Color
     abstract val OnSecondaryContainer: Color
     abstract val OnTertiaryContainer: Color
+
+    class Custom(color: Color) : ThemeColors() {
+        override val Primary = color
+        override val Secondary = color.copy(alpha = 0.8f)
+        override val Tertiary = color.copy(alpha = 0.6f)
+        override val OnPrimary = if (color.luminance() > 0.5f) Color.Black else Color.White
+        override val OnSecondary = OnPrimary
+        override val OnTertiary = OnPrimary
+        override val PrimaryContainer = color.copy(alpha = 0.12f)
+        override val SecondaryContainer = color.copy(alpha = 0.08f)
+        override val TertiaryContainer = color.copy(alpha = 0.04f)
+        override val OnPrimaryContainer = color.copy(alpha = 0.87f)
+        override val OnSecondaryContainer = color.copy(alpha = 0.87f)
+        override val OnTertiaryContainer = color.copy(alpha = 0.87f)
+    }
 
     // 默认主题（黄色）
     object Default : ThemeColors() {

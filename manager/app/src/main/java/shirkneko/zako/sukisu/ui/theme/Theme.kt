@@ -253,10 +253,23 @@ fun Context.saveThemeColors(themeName: String) {
 }
 
 fun Context.loadThemeColors() {
-    val themeName = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
-        .getString("theme_colors", "default")
+    val prefs = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+    val themeName = prefs.getString("theme_colors", "default")
 
     ThemeConfig.currentTheme = when(themeName) {
+        "custom" -> {
+            val customColor = prefs.getString("custom_color", null)
+            if (customColor != null) {
+                try {
+                    val color = Color(android.graphics.Color.parseColor("#$customColor"))
+                    ThemeColors.Custom(color)
+                } catch (e: Exception) {
+                    ThemeColors.Default
+                }
+            } else {
+                ThemeColors.Default
+            }
+        }
         "blue" -> ThemeColors.Blue
         "green" -> ThemeColors.Green
         "purple" -> ThemeColors.Purple
