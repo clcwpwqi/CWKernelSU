@@ -243,7 +243,7 @@ fun Context.saveThemeColors(themeName: String) {
         .apply()
 
     ThemeConfig.currentTheme = when(themeName) {
-        "blue" -> ThemeColors.Blue
+        "yellow" -> ThemeColors.Yellow
         "green" -> ThemeColors.Green
         "purple" -> ThemeColors.Purple
         "orange" -> ThemeColors.Orange
@@ -257,7 +257,7 @@ fun Context.loadThemeColors() {
         .getString("theme_colors", "default")
 
     ThemeConfig.currentTheme = when(themeName) {
-        "blue" -> ThemeColors.Blue
+        "yellow" -> ThemeColors.Yellow
         "green" -> ThemeColors.Green
         "purple" -> ThemeColors.Purple
         "orange" -> ThemeColors.Orange
