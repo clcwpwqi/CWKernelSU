@@ -60,7 +60,7 @@ ifeq ($(strip $(KSU_MANUAL_VERSION)),)
     else
         # .git is a text file while the module is imported by 'git submodule add'.
         $(warning "KSU_GIT_VERSION not defined! Using default version.")
-        KSU_VERSION := 16  # 默认版本号
+        KSU_VERSION := 16
         $(info -- KernelSU version (Default): $(KSU_VERSION))
         ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
     endif
