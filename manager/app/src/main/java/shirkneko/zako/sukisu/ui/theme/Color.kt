@@ -15,10 +15,29 @@ sealed class ThemeColors {
     abstract val OnPrimaryContainer: Color
     abstract val OnSecondaryContainer: Color
     abstract val OnTertiaryContainer: Color
+    open fun getCustomSliderActiveColor(): Color = Primary
+    open fun getCustomSliderInactiveColor(): Color = PrimaryContainer
 
 
-    // 蓝色主题
+    // （黄色）
     object Default : ThemeColors() {
+        override val Primary = Color(0xFFFFD700)
+        override val Secondary = Color(0xFFFFBC52)
+        override val Tertiary = Color(0xFF795548)
+        override val OnPrimary = Color(0xFF000000)
+        override val OnSecondary = Color(0xFF000000)
+        override val OnTertiary = Color(0xFFFFFFFF)
+        override val PrimaryContainer = Color(0xFFFFFBE9)
+        override val SecondaryContainer = Color(0xFFFFE6B3)
+        override val TertiaryContainer = Color(0xFFD7CCC8)
+        override val OnPrimaryContainer = Color(0xFF000000)
+        override val OnSecondaryContainer = Color(0xFF000000)
+        override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
+    }
+    // 蓝色主题
+    object Blue : ThemeColors() {
         override val Primary = Color(0xFF2196F3)
         override val Secondary = Color(0xFF1E88E5)
         override val Tertiary = Color(0xFF0D47A1)
@@ -31,25 +50,9 @@ sealed class ThemeColors {
         override val OnPrimaryContainer = Color(0xFF000000)
         override val OnSecondaryContainer = Color(0xFF000000)
         override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
     }
-
-    // （黄色）
-    object Yellow : ThemeColors() {
-        override val Primary = Color(0xFFFFC107)
-        override val Secondary = Color(0xFFFFA000)
-        override val Tertiary = Color(0xFF5D4037)
-        override val OnPrimary = Color(0xFF000000)
-        override val OnSecondary = Color(0xFF000000)
-        override val OnTertiary = Color(0xFFFFFFFF)
-        override val PrimaryContainer = Color(0xFFFFF9C4)
-        override val SecondaryContainer = Color(0xFFFFECB3)
-        override val TertiaryContainer = Color(0xFFBCAAA4)
-        override val OnPrimaryContainer = Color(0xFF000000)
-        override val OnSecondaryContainer = Color(0xFF000000)
-        override val OnTertiaryContainer = Color(0xFF000000)
-    }
-
-
 
     // 绿色主题
     object Green : ThemeColors() {
@@ -65,6 +68,8 @@ sealed class ThemeColors {
         override val OnPrimaryContainer = Color(0xFF000000)
         override val OnSecondaryContainer = Color(0xFF000000)
         override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
     }
 
     // 紫色主题
@@ -81,6 +86,8 @@ sealed class ThemeColors {
         override val OnPrimaryContainer = Color(0xFF000000)
         override val OnSecondaryContainer = Color(0xFF000000)
         override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
     }
 
     // 橙色主题
@@ -97,6 +104,8 @@ sealed class ThemeColors {
         override val OnPrimaryContainer = Color(0xFF000000)
         override val OnSecondaryContainer = Color(0xFF000000)
         override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
     }
 
     // 粉色主题
@@ -113,5 +122,42 @@ sealed class ThemeColors {
         override val OnPrimaryContainer = Color(0xFF000000)
         override val OnSecondaryContainer = Color(0xFF000000)
         override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
+    }
+
+    object Gray : ThemeColors() {
+        override val Primary = Color(0xFF9E9E9E)
+        override val Secondary = Color(0xFF757575)
+        override val Tertiary = Color(0xFF616161)
+        override val OnPrimary = Color(0xFFFFFFFF)
+        override val OnSecondary = Color(0xFFFFFFFF)
+        override val OnTertiary = Color(0xFFFFFFFF)
+        override val PrimaryContainer = Color(0xFFEEEEEE)
+        override val SecondaryContainer = Color(0xFFE0E0E0)
+        override val TertiaryContainer = Color(0xFFBDBDBD)
+        override val OnPrimaryContainer = Color(0xFF000000)
+        override val OnSecondaryContainer = Color(0xFF000000)
+        override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
+    }
+
+    // 象牙白主题
+    object Ivory : ThemeColors() {
+        override val Primary = Color(0xFFFAF0E6)
+        override val Secondary = Color(0xFFFFF0E6)
+        override val Tertiary = Color(0xFFD7CCC8)
+        override val OnPrimary = Color(0xFF000000)
+        override val OnSecondary = Color(0xFF000000)
+        override val OnTertiary = Color(0xFF000000)
+        override val PrimaryContainer = Color(0xFFFFFAE3)
+        override val SecondaryContainer = Color(0xFFFFF0E6)
+        override val TertiaryContainer = Color(0xFFFFF0E6)
+        override val OnPrimaryContainer = Color(0xFF000000)
+        override val OnSecondaryContainer = Color(0xFF000000)
+        override val OnTertiaryContainer = Color(0xFF000000)
+        override fun getCustomSliderActiveColor(): Color = Primary
+        override fun getCustomSliderInactiveColor(): Color = PrimaryContainer
     }
 }

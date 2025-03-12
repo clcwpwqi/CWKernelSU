@@ -1,4 +1,4 @@
-# MKSU-SKN
+# SukiSU
 
 **简体中文** | [English](README-en.md)
 
@@ -9,6 +9,8 @@
 
 >
 > 这是非官方分叉，保留所有权利 [@tiann](https://github.com/tiann)
+>
+> 这是个基于个人使用二改的项目，仅限个人研究开发使用
 
 
 ## 如何添加
@@ -50,6 +52,8 @@ curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/setu
 
 - [KernelSU](https://github.com/tiann/KernelSU)： 原始项目
 - [MKSU](https://github.com/5ec1cff/KernelSU)：使用的项目
+- [RKSU](https://github.com/rsuntk/KernelsU):使用该项目的kernel对非GKI设备进行重新支持
+- [susfs](https://gitlab.com/simonpunk/susfs4ksu)：使用的susfs文件系统
 - [kernel-assisted-superuser](https://git.zx2c4.com/kernel-assisted-superuser/about/)： KernelSU 的构想
 - [Magisk](https://github.com/topjohnwu/Magisk)： 强大的 root 工具
 - [genuine](https://github.com/brevent/genuine/)： APK v2 签名验证

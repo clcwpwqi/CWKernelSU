@@ -243,11 +243,13 @@ fun Context.saveThemeColors(themeName: String) {
         .apply()
 
     ThemeConfig.currentTheme = when(themeName) {
-        "yellow" -> ThemeColors.Yellow
+        "blue" -> ThemeColors.Blue
         "green" -> ThemeColors.Green
         "purple" -> ThemeColors.Purple
         "orange" -> ThemeColors.Orange
         "pink" -> ThemeColors.Pink
+        "gray" -> ThemeColors.Gray
+        "ivory" -> ThemeColors.Ivory
         else -> ThemeColors.Default
     }
 }
@@ -257,11 +259,13 @@ fun Context.loadThemeColors() {
         .getString("theme_colors", "default")
 
     ThemeConfig.currentTheme = when(themeName) {
-        "yellow" -> ThemeColors.Yellow
+        "blue" -> ThemeColors.Blue
         "green" -> ThemeColors.Green
         "purple" -> ThemeColors.Purple
         "orange" -> ThemeColors.Orange
         "pink" -> ThemeColors.Pink
+        "gray" -> ThemeColors.Gray
+        "ivory" -> ThemeColors.Ivory
         else -> ThemeColors.Default
     }
 }

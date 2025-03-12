@@ -122,12 +122,14 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
 
     // 主题色选项
     val themeColorOptions = listOf(
-        "蓝色" to ThemeColors.Default,
-        "黄色" to ThemeColors.Yellow,
+        "黄色" to ThemeColors.Default,
+        "蓝色" to ThemeColors.Blue,
         "绿色" to ThemeColors.Green,
         "紫色" to ThemeColors.Purple,
         "橙色" to ThemeColors.Orange,
-        "粉色" to ThemeColors.Pink
+        "粉色" to ThemeColors.Pink,
+        "高级灰" to ThemeColors.Gray,
+        "象牙白" to ThemeColors.Ivory
     )
 
     var showThemeColorDialog by remember { mutableStateOf(false) }
@@ -249,12 +251,14 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                     headlineContent = { Text("主题颜色") },
                     supportingContent = {
                         val currentThemeName = when (ThemeConfig.currentTheme) {
-                            is ThemeColors.Default -> "蓝色"
-                            is ThemeColors.Yellow -> "黄色"
+                            is ThemeColors.Default -> "黄色"
+                            is ThemeColors.Blue -> "蓝色"
                             is ThemeColors.Green -> "绿色"
                             is ThemeColors.Purple -> "紫色"
                             is ThemeColors.Orange -> "橙色"
                             is ThemeColors.Pink -> "粉色"
+                            is ThemeColors.Gray -> "高级灰"
+                            is ThemeColors.Ivory -> "象牙白"
                             else -> "默认"
                         }
                         Text(currentThemeName)
@@ -275,11 +279,13 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                                             .clickable {
                                                 context.saveThemeColors(when (theme) {
                                                     ThemeColors.Default -> "default"
-                                                    ThemeColors.Yellow -> "Yellow"
+                                                    ThemeColors.Blue -> "blue"
                                                     ThemeColors.Green -> "green"
                                                     ThemeColors.Purple -> "purple"
                                                     ThemeColors.Orange -> "orange"
                                                     ThemeColors.Pink -> "pink"
+                                                    ThemeColors.Gray -> "gray"
+                                                    ThemeColors.Ivory -> "ivory"
                                                     else -> "default"
                                                 })
                                                 showThemeColorDialog = false
@@ -353,7 +359,8 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                                     }
                                 },
                                 valueRange = 0f..1f,
-                                colors = getSliderColors(cardAlpha),
+                                // 确保使用自定义颜色
+                                colors = getSliderColors(cardAlpha, useCustomColors = true),
                                 thumb = {
                                     SliderDefaults.Thumb(
                                         interactionSource = remember { MutableInteractionSource() },
@@ -363,6 +370,7 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
                             )
                         }
                     )
+
 
                     ListItem(
                         leadingContent = { Icon(Icons.Filled.DarkMode, null) },
@@ -418,10 +426,21 @@ fun MoreSettingsScreen(navigator: DestinationsNavigator) {
 }
 
 @Composable
-fun getSliderColors(value: Float): SliderColors {
-    val activeColor = Color.Magenta.copy(alpha = value)
-    return SliderDefaults.colors(
-        activeTrackColor = activeColor,
-        inactiveTrackColor = Color.Gray.copy(alpha = 0.3f)
-    )
+private fun getSliderColors(cardAlpha: Float, useCustomColors: Boolean = false): SliderColors {
+    val theme = ThemeConfig.currentTheme
+    return if (useCustomColors) {
+        // 使用自定义的主题色设置滑条颜色
+        SliderDefaults.colors(
+            activeTrackColor = theme.getCustomSliderActiveColor(),
+            inactiveTrackColor = theme.getCustomSliderInactiveColor(),
+            thumbColor = theme.getCustomSliderActiveColor()
+        )
+    } else {
+        // 使用原有的动态颜色设置
+        val activeColor = Color.Magenta.copy(alpha = cardAlpha)
+        SliderDefaults.colors(
+            activeTrackColor = activeColor,
+            inactiveTrackColor = Color.Gray.copy(alpha = 0.3f)
+        )
+    }
 }

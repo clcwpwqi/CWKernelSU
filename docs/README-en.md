@@ -1,4 +1,4 @@
-# MKSU-SKN
+# Sukisu
 
 **Enlish** | [简体中文](README.md)
 
@@ -9,12 +9,14 @@ Android device root solution based on [KernelSU](https://github.com/KernelSU/Ker
 
 >
 > This is an unofficial fork, all rights reserved [@tiann](https://github.com/tiann)
+>
+> This is a project based on personal use of the second change, personal research and development use only
 
 - Fully adapted for non-GKI devices
 
 ## How to add
 ```
-curl -LSs “https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/setup.sh” | bash -s susfs_patch
+curl -LSs “https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/setup.sh” | bash -s susfs-dev
 ```
 
 
@@ -24,7 +26,7 @@ curl -LSs “https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/se
 Use the susfs-dev branch directly without any patching
 
 
-Or use the default branch for patching, with files in ptach
+Or use the default branch for patching, with files in [patch](../patch)
 
 ## More links
 Projects compiled based on MKSU-SKN and susfs
@@ -51,6 +53,8 @@ Projects compiled based on MKSU-SKN and susfs
 
 - [KernelSU](https://github.com/tiann/KernelSU): original project
 - [MKSU](https://github.com/5ec1cff/KernelSU): Used project
+- [RKSU](https://github.com/rsuntk/KernelsU)：Re-support of non-GKI devices using the kernel of this project
+- [susfs](https://gitlab.com/simonpunk/susfs4ksu)：Used susfs file system
 - [KernelSU](https://git.zx2c4.com/kernel-assisted-superuser/about/): KernelSU conceptualization
 - [Magisk](https://github.com/topjohnwu/Magisk): Powerful root utility
 - [genuine](https://github.com/brevent/genuine/): APK v2 Signature Verification

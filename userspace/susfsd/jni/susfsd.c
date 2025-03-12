@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <unistd.h>
 
+// Modification of KernelSU-Next build susfs using rifsxd
+// Building with the susfs filesystem
 #define KERNEL_SU_OPTION 0xDEADBEEF
 
 #define CMD_SUSFS_SHOW_VERSION 0x555e1
