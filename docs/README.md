@@ -1,4 +1,4 @@
-# SukiSU
+# CWKernelSU
 
 **简体中文** | [English](README-en.md)
 
@@ -17,7 +17,7 @@
 在内核源码的根目录下执行此命令
 
 ```
-curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/setup.sh" | bash -s susfs-dev
+curl -LSs "https://raw.githubusercontent.com/clcwpwqi/CWKernelSU/main/kernel/setup.sh" | bash -s susfs-dev
 ```
 
 ## 如何使用 
@@ -26,11 +26,6 @@ curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/setu
 
 
 或者对默认分支进行补丁，补丁文件在 [patch](../patch) 目录里
-
-## 更多链接
-基于 MKSU-SKN 和 susfs 编译的项目
-- [GKI](https://github.com/ShirkNeko/GKI_KernelSU_SUSFS) 
-- [一加](https://github.com/ShirkNeko/Action_OnePlus_MKSU_SUSFS)
 
 
 ## 特点
@@ -53,6 +48,8 @@ curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/main/kernel/setu
 - [KernelSU](https://github.com/tiann/KernelSU)： 原始项目
 - [MKSU](https://github.com/5ec1cff/KernelSU)：使用的项目
 - [RKSU](https://github.com/rsuntk/KernelsU):使用该项目的kernel对非GKI设备进行重新支持
+- [SukiSU](https://github.com/ShirkNeko/KernelSU?tab=readme-ov-file):本项目的基础，在该项目上进行的基于个人喜好的轻微修改
+
 - [susfs](https://gitlab.com/simonpunk/susfs4ksu)：使用的susfs文件系统
 - [kernel-assisted-superuser](https://git.zx2c4.com/kernel-assisted-superuser/about/)： KernelSU 的构想
 - [Magisk](https://github.com/topjohnwu/Magisk)： 强大的 root 工具
